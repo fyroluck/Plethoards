@@ -324,7 +324,7 @@
         let isUserMod = false;
         let currentFilter = 'all';
 
-        // 🛡️ MODERATOR WHITELIST (Your ID is active here):
+        // 🛡️ MODERATOR WHITELIST:
         const ADMIN_DISCORD_IDS = [
             "1555287625760510083"
         ];
@@ -339,11 +339,16 @@
         }
 
         async function logoutDiscord() {
-            await supabaseClient.auth.signOut();
+            try {
+                await supabaseClient.auth.signOut();
+            } catch (e) {
+                console.error("Signout error:", e);
+            }
+            localStorage.clear();
+            sessionStorage.clear();
             currentUser = null;
             isUserMod = false;
-            updateAuthUI();
-            renderHoards();
+            window.location.reload();
         }
 
         async function checkUserSession() {
