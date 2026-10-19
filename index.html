@@ -324,7 +324,7 @@
         let isUserMod = false;
         let currentFilter = 'all';
 
-        // 🛡️ CORRECT MODERATOR WHITELIST (Your active ID):
+        // 🛡️ CORRECT MODERATOR WHITELIST:
         const ADMIN_DISCORD_IDS = [
             "1024720234357194814"
         ];
@@ -641,10 +641,39 @@
                 shinyMythic: parseInt(document.getElementById('input-shinymythic').value) || 0
             };
 
+            const totalCount = variants.normal + variants.mythic + variants.shiny + variants.shinyMythic;
+
             if (editId) {
                 await supabaseClient.from('hoards').update({ pet_name: petName, hoarder, image, trend, variants }).eq('id', editId);
             } else {
                 await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image, trend, variants }]);
+
+                // 🚀 DISCORD WEBHOOK INTEGRATION
+                const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
+                
+                const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
+                
+                const discordPayload = {
+                    content: "🚨 **New Pet Hoard Tracked!** 🚨",
+                    embeds: [{
+                        title: `${petName}`,
+                        description: `Hoarded by **@${hoarder}**\n\n**Trend Status:** ${trendEmoji}\n**Total Count:** \`${totalCount.toLocaleString()}\``,
+                        color: 6316128,
+                        thumbnail: { url: image },
+                        footer: { text: "Pet Hoard Tracker • Community Market Intel" },
+                        timestamp: new Date().toISOString()
+                    }]
+                };
+
+                try {
+                    await fetch(DISCORD_WEBHOOK_URL, {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify(discordPayload)
+                    });
+                } catch (err) {
+                    console.error("Failed to send Discord webhook notification:", err);
+                }
             }
 
             closeHoardEditorModal();
