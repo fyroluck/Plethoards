@@ -651,14 +651,13 @@
                 
                 const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
                 
-                // If it's a data URL, we send it directly or use image as thumbnail if small enough, otherwise use image
                 const discordPayload = {
                     content: "🚨 **New Pet Hoard Tracked!** 🚨",
                     embeds: [{
                         title: `${petName}`,
                         description: `Hoarded by **@${hoarder}**\n\n**Trend Status:** ${trendEmoji}\n**Total Count:** \`${totalCount.toLocaleString()}\``,
                         color: 6316128,
-                        thumbnail: { url: image.startsWith('data:image') ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=200&q=80' : image },
+                        thumbnail: { url: image }, // Passes your exact uploaded image straight to Discord
                         footer: { text: "PletHoards • Pet Hoard Tracker" },
                         timestamp: new Date().toISOString()
                     }]
