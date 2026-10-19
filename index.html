@@ -47,16 +47,6 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(255, 255, 255, 0.08);
         }
-        @keyframes pulseGlow {
-            0%, 100% { opacity: 0.8; transform: scale(1); }
-            50% { opacity: 1; transform: scale(1.02); }
-        }
-        .glow-rising {
-            box-shadow: 0 0 15px rgba(34, 197, 94, 0.2);
-        }
-        .glow-dropping {
-            box-shadow: 0 0 15px rgba(239, 68, 68, 0.2);
-        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
@@ -72,34 +62,18 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         Pet Hoard Tracker
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.0</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.1</span>
                     </h1>
                     <p class="text-xs text-slate-400 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
             </div>
 
-            <!-- Discord Authentication Area -->
-            <div id="auth-container">
-                <!-- Logged Out State -->
-                <button id="discord-login-btn" onclick="openDiscordAuthModal()" class="flex items-center space-x-2 bg-discord hover:bg-discordHover text-white px-4 py-2.5 rounded-xl font-medium shadow-lg transition-all duration-200 transform hover:-translate-y-0.5">
-                    <i class="fa-brands fa-discord text-xl"></i>
-                    <span>Discord Login</span>
+            <!-- Mod Toggle Controller -->
+            <div class="flex items-center space-x-3">
+                <button id="mod-toggle-btn" onclick="toggleModMode()" class="flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-700 transition-all">
+                    <i class="fa-solid fa-shield-halved text-indigo-400"></i>
+                    <span id="mod-toggle-text">Enable Mod Controls</span>
                 </button>
-
-                <!-- Logged In State (Hidden by default) -->
-                <div id="user-profile" class="hidden flex items-center space-x-3 bg-slate-800/80 p-1.5 pr-4 rounded-xl border border-slate-700">
-                    <img id="user-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-lg border border-slate-600 object-cover">
-                    <div class="text-left">
-                        <div class="flex items-center space-x-1.5">
-                            <span id="user-name" class="font-bold text-sm text-white">Username</span>
-                            <span id="mod-badge" class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.2 rounded border border-amber-500/40 hidden">MOD</span>
-                        </div>
-                        <p id="user-role" class="text-xs text-slate-400">Server Member</p>
-                    </div>
-                    <button onclick="logoutDiscord()" class="ml-2 text-slate-400 hover:text-red-400 p-1.5 transition-colors" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
             </div>
         </div>
     </header>
@@ -114,7 +88,7 @@
                     <i class="fa-solid fa-key text-amber-400 text-sm"></i>
                     <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Trend Status Key</h2>
                 </div>
-                <span class="text-xs text-slate-400">Reflects active hoarding behavior over the past 14 days</span>
+                <span class="text-xs text-slate-400">Reflects active hoarding behavior</span>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
@@ -128,7 +102,7 @@
                             Rising
                             <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
                         </div>
-                        <p class="text-xs text-slate-300">Hoarder is actively buying/collecting more</p>
+                        <p class="text-xs text-slate-300">Hoarder is actively collecting more</p>
                     </div>
                 </div>
 
@@ -139,7 +113,7 @@
                     </div>
                     <div>
                         <div class="font-semibold text-amber-400 text-sm">Stable / Paused</div>
-                        <p class="text-xs text-slate-300">Not collecting more (or scarce supply)</p>
+                        <p class="text-xs text-slate-300">Not collecting more (or cant find any)</p>
                     </div>
                 </div>
 
@@ -150,7 +124,7 @@
                     </div>
                     <div>
                         <div class="font-semibold text-rose-400 text-sm">Dropping</div>
-                        <p class="text-xs text-slate-300">Hoarder is cashing out / selling off</p>
+                        <p class="text-xs text-slate-300">Hoarder is cashing out (dropping)</p>
                     </div>
                 </div>
             </div>
@@ -174,7 +148,7 @@
                     <button onclick="setFilter('dropping')" id="filter-dropping" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Dropping</button>
                 </div>
 
-                <!-- Add Hoard Button (Requires Mod Perms) -->
+                <!-- Add Hoard Button (Hidden unless Mod mode is active) -->
                 <button id="add-hoard-btn" onclick="openHoardEditorModal()" class="hidden items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition-all">
                     <i class="fa-solid fa-plus"></i>
                     <span>Add New Hoard</span>
@@ -202,7 +176,7 @@
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p>© 2026 Pet Hoard Tracker • Community Market Intel</p>
             <p class="flex items-center gap-1">
-                <span>Managed by Verified Discord Mods</span>
+                <span>Managed by Discord Bot Integration</span>
                 <i class="fa-solid fa-shield-halved text-indigo-400 ml-1"></i>
             </p>
         </div>
@@ -291,49 +265,7 @@
         </div>
     </div>
 
-    <!-- MODAL 2: DISCORD SIMULATED OAUTH MODAL -->
-    <div id="discord-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
-        <div class="bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-sm overflow-hidden shadow-2xl p-6 text-center">
-            <div class="w-16 h-16 bg-discord text-white rounded-2xl flex items-center justify-center mx-auto mb-4 text-3xl shadow-lg">
-                <i class="fa-brands fa-discord"></i>
-            </div>
-            <h3 class="text-lg font-bold text-white mb-1">Simulate Discord OAuth</h3>
-            <p class="text-xs text-slate-400 mb-6">Select a test Discord persona to simulate role verification & permissions.</p>
-
-            <div class="space-y-3">
-                <!-- Option A: Moderator Login -->
-                <button onclick="loginDiscord('moderator')" class="w-full flex items-center justify-between p-3 rounded-xl bg-indigo-950/40 hover:bg-indigo-900/50 border border-indigo-500/40 text-left transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80" class="w-10 h-10 rounded-full border border-indigo-400 object-cover">
-                        <div>
-                            <div class="font-bold text-sm text-white flex items-center gap-1.5">
-                                HoardMod_Alex
-                                <span class="text-[10px] bg-amber-500/20 text-amber-300 px-1 rounded border border-amber-500/30">MOD</span>
-                            </div>
-                            <p class="text-[11px] text-slate-400">Server Role: Verified Mod</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-indigo-400 text-xs"></i>
-                </button>
-
-                <!-- Option B: Standard Member Login -->
-                <button onclick="loginDiscord('member')" class="w-full flex items-center justify-between p-3 rounded-xl bg-slate-800 hover:bg-slate-700/80 border border-slate-700 text-left transition-colors">
-                    <div class="flex items-center space-x-3">
-                        <img src="https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80" class="w-10 h-10 rounded-full border border-slate-600 object-cover">
-                        <div>
-                            <div class="font-bold text-sm text-white">PetCollector_99</div>
-                            <p class="text-[11px] text-slate-400">Server Role: Member</p>
-                        </div>
-                    </div>
-                    <i class="fa-solid fa-chevron-right text-slate-400 text-xs"></i>
-                </button>
-            </div>
-
-            <button onclick="closeDiscordAuthModal()" class="mt-5 text-xs text-slate-500 hover:text-slate-300 transition-colors">Cancel</button>
-        </div>
-    </div>
-
-    <!-- MODAL 3: MODERATOR ADD / EDIT HOARD -->
+    <!-- MODAL 2: MODERATOR ADD / EDIT HOARD -->
     <div id="hoard-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
         <div class="glass-panel bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
@@ -348,6 +280,7 @@
 
             <form id="hoard-form" onsubmit="handleSaveHoard(event)" class="space-y-4">
                 <input type="hidden" id="edit-id" value="">
+                <input type="hidden" id="input-image-base64" value="">
 
                 <!-- Pet Name & Hoarder Name -->
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
@@ -361,19 +294,33 @@
                     </div>
                 </div>
 
-                <!-- Pet Image Thumbnail URL -->
+                <!-- Drag and Drop Image Uploader -->
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pet Image URL (PNG Thumbnail)</label>
-                    <input type="url" id="input-image" required placeholder="https://..." class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pet PNG Image</label>
+                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition-colors relative flex flex-col items-center justify-center">
+                        <input type="file" id="image-file-input" accept="image/png, image/jpeg, image/webp" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
+                        <div id="dropzone-prompt" class="space-y-1">
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400 mb-1"></i>
+                            <p class="text-xs font-medium text-slate-300">Drag & drop pet PNG here, or <span class="text-indigo-400 underline">browse</span></p>
+                            <p class="text-[10px] text-slate-500">Supports PNG, JPG, WEBP</p>
+                        </div>
+                        <div id="dropzone-preview" class="hidden flex items-center space-x-3">
+                            <img id="preview-thumb" src="" class="w-12 h-12 rounded-lg object-cover border border-slate-700">
+                            <div class="text-left">
+                                <p class="text-xs font-bold text-emerald-400">Image Loaded Successfully!</p>
+                                <p class="text-[10px] text-slate-400">Click or drop a new file to replace</p>
+                            </div>
+                        </div>
+                    </div>
                 </div>
 
                 <!-- Trend Selection -->
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Trend Status</label>
                     <select id="input-trend" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
-                        <option value="rising">📈 Rising (Collecting More)</option>
-                        <option value="stable">⏸️ Stable / Paused (Inactive)</option>
-                        <option value="dropping">📉 Dropping (Cashing Out)</option>
+                        <option value="rising">📈 Rising (Hoarder is collecting more)</option>
+                        <option value="stable">⏸️ Stable / Paused (Hoarder is not collecting more)</option>
+                        <option value="dropping">📉 Dropping (Hoarder is cashing out)</option>
                     </select>
                 </div>
 
@@ -411,8 +358,8 @@
 
     <!-- JAVASCRIPT APP LOGIC -->
     <script>
-        // --- INITIAL DATA STORE ---
-        let hoards = [
+        // --- INITIAL DATA STORE & LOCALSTORAGE SYNC ---
+        const defaultHoards = [
             {
                 id: '1',
                 petName: 'Void Kitsune',
@@ -436,35 +383,17 @@
                 image: 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=300&q=80',
                 trend: 'dropping',
                 variants: { normal: 150, mythic: 10, shiny: 25, shinyMythic: 1 }
-            },
-            {
-                id: '4',
-                petName: 'Solar Wyrm',
-                hoarder: 'HeliosVault',
-                image: 'https://images.unsplash.com/photo-1563089145-599997674d42?auto=format&fit=crop&w=300&q=80',
-                trend: 'rising',
-                variants: { normal: 850, mythic: 95, shiny: 110, shinyMythic: 24 }
-            },
-            {
-                id: '5',
-                petName: 'Golden Slime',
-                hoarder: 'GildedGamer',
-                image: 'https://images.unsplash.com/photo-1607604276583-eef5d076aa5f?auto=format&fit=crop&w=300&q=80',
-                trend: 'stable',
-                variants: { normal: 3000, mythic: 0, shiny: 450, shinyMythic: 0 }
-            },
-            {
-                id: '6',
-                petName: 'Shadow Monarch Cat',
-                hoarder: 'NyxHoarder',
-                image: 'https://images.unsplash.com/photo-1514888286974-6c03e2ca1dba?auto=format&fit=crop&w=300&q=80',
-                trend: 'rising',
-                variants: { normal: 650, mythic: 80, shiny: 90, shinyMythic: 15 }
             }
         ];
 
+        let hoards = JSON.parse(localStorage.getItem('pet_hoards_data')) || defaultHoards;
+
+        function saveToStorage() {
+            localStorage.setItem('pet_hoards_data', JSON.stringify(hoards));
+        }
+
         // State management
-        let currentUser = null; // { name, role, isMod, avatar }
+        let isModMode = false;
         let currentFilter = 'all';
 
         // Helper: Calculate total hoard count
@@ -511,7 +440,7 @@
 
                 // Moderator actions overlay
                 let modActionsHTML = '';
-                if (currentUser && currentUser.isMod) {
+                if (isModMode) {
                     modActionsHTML = `
                         <div class="absolute top-3 right-3 flex items-center space-x-1.5 z-20">
                             <button onclick="event.stopPropagation(); openHoardEditorModal('${hoard.id}')" class="p-1.5 bg-slate-800/90 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700" title="Edit Hoard">
@@ -597,17 +526,17 @@
                 trendBanner.className = 'flex items-center justify-between p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-semibold';
                 trendIcon.innerText = '📈';
                 trendText.innerText = 'Rising Trend';
-                trendDesc.innerText = 'Actively collecting more';
+                trendDesc.innerText = 'Hoarder is actively collecting more';
             } else if (hoard.trend === 'stable') {
                 trendBanner.className = 'flex items-center justify-between p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 text-xs font-semibold';
                 trendIcon.innerText = '⏸️';
                 trendText.innerText = 'Stable / Paused';
-                trendDesc.innerText = 'Not actively expanding';
+                trendDesc.innerText = 'Not collecting more (or cant find any)';
             } else {
                 trendBanner.className = 'flex items-center justify-between p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs font-semibold';
                 trendIcon.innerText = '📉';
                 trendText.innerText = 'Dropping Trend';
-                trendDesc.innerText = 'Cashing out / selling off';
+                trendDesc.innerText = 'Hoarder is cashing out';
             }
 
             // Variant counts
@@ -636,72 +565,67 @@
             }, 200);
         }
 
-        // --- DISCORD AUTH SIMULATION ---
-        function openDiscordAuthModal() {
-            const modal = document.getElementById('discord-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
+        // --- TOGGLE LOCAL MOD MODE (Simulating Bot/Role check) ---
+        function toggleModMode() {
+            isModMode = !isModMode;
+            const btn = document.getElementById('mod-toggle-btn');
+            const text = document.getElementById('mod-toggle-text');
+            const addBtn = document.getElementById('add-hoard-btn');
 
-        function closeDiscordAuthModal() {
-            const modal = document.getElementById('discord-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 200);
-        }
-
-        function loginDiscord(persona) {
-            if (persona === 'moderator') {
-                currentUser = {
-                    name: 'HoardMod_Alex',
-                    role: 'Verified Mod',
-                    isMod: true,
-                    avatar: 'https://images.unsplash.com/photo-1534528741775-53994a69daeb?auto=format&fit=crop&w=120&q=80'
-                };
+            if (isModMode) {
+                btn.className = 'flex items-center space-x-2 bg-indigo-600 hover:bg-indigo-500 text-white px-3.5 py-2 rounded-xl text-xs font-semibold border border-indigo-500 transition-all shadow-lg';
+                text.innerText = 'Mod Mode Active';
+                addBtn.classList.remove('hidden');
+                addBtn.classList.add('flex');
             } else {
-                currentUser = {
-                    name: 'PetCollector_99',
-                    role: 'Server Member',
-                    isMod: false,
-                    avatar: 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'
-                };
+                btn.className = 'flex items-center space-x-2 bg-slate-800 hover:bg-slate-700 text-slate-300 px-3.5 py-2 rounded-xl text-xs font-semibold border border-slate-700 transition-all';
+                text.innerText = 'Enable Mod Controls';
+                addBtn.classList.add('hidden');
             }
-
-            updateAuthUI();
-            closeDiscordAuthModal();
             renderHoards();
         }
 
-        function logoutDiscord() {
-            currentUser = null;
-            updateAuthUI();
-            renderHoards();
+        // --- DRAG AND DROP IMAGE HANDLER ---
+        function handleFileSelect(e) {
+            const file = e.target.files[0];
+            if (file) {
+                processImageFile(file);
+            }
         }
 
-        function updateAuthUI() {
-            const loginBtn = document.getElementById('discord-login-btn');
-            const profile = document.getElementById('user-profile');
-            const addHoardBtn = document.getElementById('add-hoard-btn');
+        const dropZone = document.getElementById('drop-zone');
+        ['dragenter', 'dragover'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.add('border-indigo-500', 'bg-indigo-950/20');
+            }, false);
+        });
 
-            if (currentUser) {
-                loginBtn.classList.add('hidden');
-                profile.classList.remove('hidden');
-                document.getElementById('user-avatar').src = currentUser.avatar;
-                document.getElementById('user-name').innerText = currentUser.name;
-                document.getElementById('user-role').innerText = currentUser.role;
+        ['dragleave', 'drop'].forEach(eventName => {
+            dropZone.addEventListener(eventName, (e) => {
+                e.preventDefault();
+                dropZone.classList.remove('border-indigo-500', 'bg-indigo-950/20');
+            }, false);
+        });
 
-                if (currentUser.isMod) {
-                    document.getElementById('mod-badge').classList.remove('hidden');
-                    addHoardBtn.classList.remove('hidden');
-                    addHoardBtn.classList.add('flex');
-                } else {
-                    document.getElementById('mod-badge').classList.add('hidden');
-                    addHoardBtn.classList.add('hidden');
-                }
-            } else {
-                loginBtn.classList.remove('hidden');
-                profile.classList.add('hidden');
-                addHoardBtn.classList.add('hidden');
+        dropZone.addEventListener('drop', (e) => {
+            const dt = e.dataTransfer;
+            const file = dt.files[0];
+            if (file) {
+                processImageFile(file);
             }
+        });
+
+        function processImageFile(file) {
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                const base64Data = e.target.result;
+                document.getElementById('input-image-base64').value = base64Data;
+                document.getElementById('preview-thumb').src = base64Data;
+                document.getElementById('dropzone-prompt').classList.add('hidden');
+                document.getElementById('dropzone-preview').classList.remove('hidden');
+            }
+            reader.readAsDataURL(file);
         }
 
         // --- MODERATOR ADD / EDIT HOARD ---
@@ -712,6 +636,9 @@
 
             form.reset();
             document.getElementById('edit-id').value = '';
+            document.getElementById('input-image-base64').value = '';
+            document.getElementById('dropzone-prompt').classList.remove('hidden');
+            document.getElementById('dropzone-preview').classList.add('hidden');
 
             if (id) {
                 const hoard = hoards.find(h => h.id === id);
@@ -721,15 +648,19 @@
                 document.getElementById('edit-id').value = hoard.id;
                 document.getElementById('input-pet-name').value = hoard.petName;
                 document.getElementById('input-hoarder').value = hoard.hoarder;
-                document.getElementById('input-image').value = hoard.image;
+                document.getElementById('input-image-base64').value = hoard.image;
                 document.getElementById('input-trend').value = hoard.trend;
                 document.getElementById('input-normal').value = hoard.variants.normal || 0;
                 document.getElementById('input-mythic').value = hoard.variants.mythic || 0;
                 document.getElementById('input-shiny').value = hoard.variants.shiny || 0;
                 document.getElementById('input-shinymythic').value = hoard.variants.shinyMythic || 0;
+
+                // Show existing thumbnail preview
+                document.getElementById('preview-thumb').src = hoard.image;
+                document.getElementById('dropzone-prompt').classList.add('hidden');
+                document.getElementById('dropzone-preview').classList.remove('hidden');
             } else {
                 title.innerHTML = `<i class="fa-solid fa-plus text-emerald-400"></i><span>Add New Hoard</span>`;
-                document.getElementById('input-image').value = 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
             }
 
             modal.classList.remove('hidden');
@@ -748,7 +679,7 @@
             const editId = document.getElementById('edit-id').value;
             const petName = document.getElementById('input-pet-name').value.trim();
             const hoarder = document.getElementById('input-hoarder').value.trim();
-            const image = document.getElementById('input-image').value.trim();
+            const image = document.getElementById('input-image-base64').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
             const trend = document.getElementById('input-trend').value;
 
             const variants = {
@@ -759,13 +690,11 @@
             };
 
             if (editId) {
-                // Update existing
                 const index = hoards.findIndex(h => h.id === editId);
                 if (index !== -1) {
                     hoards[index] = { ...hoards[index], petName, hoarder, image, trend, variants };
                 }
             } else {
-                // Create new
                 const newHoard = {
                     id: Date.now().toString(),
                     petName,
@@ -777,6 +706,7 @@
                 hoards.unshift(newHoard);
             }
 
+            saveToStorage();
             closeHoardEditorModal();
             renderHoards();
         }
@@ -784,6 +714,7 @@
         function deleteHoard(id) {
             if (confirm("Are you sure you want to delete this hoard?")) {
                 hoards = hoards.filter(h => h.id !== id);
+                saveToStorage();
                 renderHoards();
             }
         }
