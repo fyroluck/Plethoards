@@ -64,7 +64,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         Pet Hoard Tracker
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.4</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.5</span>
                     </h1>
                     <p class="text-xs text-slate-400 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -324,9 +324,9 @@
         let isUserMod = false;
         let currentFilter = 'all';
 
-        // 🛡️ MODERATOR WHITELIST:
+        // 🛡️ CORRECT MODERATOR WHITELIST (Your active ID):
         const ADMIN_DISCORD_IDS = [
-            "1555287625760510083"
+            "1024720234357194814"
         ];
 
         async function loginWithDiscord() {
@@ -359,7 +359,7 @@
                 const name = meta.full_name || meta.name || 'Discord User';
                 const avatar = meta.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
 
-                // Extract real Discord numeric ID from sub/identities metadata
+                // Extract real Discord numeric ID from metadata sub or provider id
                 const discordId = meta.sub || (currentUser.identities && currentUser.identities[0] ? currentUser.identities[0].identity_data?.sub : null) || currentUser.id;
 
                 // Check if logged-in user ID matches your admin whitelist
