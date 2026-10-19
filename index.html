@@ -255,7 +255,7 @@
 
             <form id="hoard-form" onsubmit="handleSaveHoard(event)" class="space-y-4">
                 <input type="hidden" id="edit-id" value="">
-                <input type="hidden" id="input-image-base64" value="">
+                <input type="hidden" id="input-image-url" value="">
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
@@ -279,7 +279,7 @@
                         <div id="dropzone-preview" class="hidden flex items-center space-x-3">
                             <img id="preview-thumb" src="" class="w-12 h-12 rounded-lg object-cover border border-slate-700">
                             <div class="text-left">
-                                <p class="text-xs font-bold text-emerald-400">Image Loaded Successfully!</p>
+                                <p class="text-xs font-bold text-emerald-400" id="upload-status-text">Image Loaded Successfully!</p>
                             </div>
                         </div>
                     </div>
@@ -554,9 +554,21 @@
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
 
+        let selectedFileToUpload = null;
+
         function handleFileSelect(e) {
             const file = e.target.files[0];
-            if (file) processImageFile(file);
+            if (file) {
+                selectedFileToUpload = file;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('preview-thumb').src = evt.target.result;
+                    document.getElementById('dropzone-prompt').classList.add('hidden');
+                    document.getElementById('dropzone-preview').classList.remove('hidden');
+                    document.getElementById('upload-status-text').innerText = "Ready to upload!";
+                }
+                reader.readAsDataURL(file);
+            }
         }
 
         const dropZone = document.getElementById('drop-zone');
@@ -568,20 +580,18 @@
         });
         dropZone.addEventListener('drop', (e) => {
             const file = e.dataTransfer.files[0];
-            if (file) processImageFile(file);
-        });
-
-        function processImageFile(file) {
-            const reader = new FileReader();
-            reader.onload = function(e) {
-                const base64Data = e.target.result;
-                document.getElementById('input-image-base64').value = base64Data;
-                document.getElementById('preview-thumb').src = base64Data;
-                document.getElementById('dropzone-prompt').classList.add('hidden');
-                document.getElementById('dropzone-preview').classList.remove('hidden');
+            if (file) {
+                selectedFileToUpload = file;
+                const reader = new FileReader();
+                reader.onload = function(evt) {
+                    document.getElementById('preview-thumb').src = evt.target.result;
+                    document.getElementById('dropzone-prompt').classList.add('hidden');
+                    document.getElementById('dropzone-preview').classList.remove('hidden');
+                    document.getElementById('upload-status-text').innerText = "Ready to upload!";
+                }
+                reader.readAsDataURL(file);
             }
-            reader.readAsDataURL(file);
-        }
+        });
 
         function openHoardEditorModal(id = null) {
             if (!isUserMod) { alert("Unauthorized"); return; }
@@ -589,7 +599,8 @@
             const title = document.getElementById('editor-title');
             document.getElementById('hoard-form').reset();
             document.getElementById('edit-id').value = '';
-            document.getElementById('input-image-base64').value = '';
+            document.getElementById('input-image-url').value = '';
+            selectedFileToUpload = null;
             document.getElementById('dropzone-prompt').classList.remove('hidden');
             document.getElementById('dropzone-preview').classList.add('hidden');
 
@@ -600,7 +611,7 @@
                 document.getElementById('edit-id').value = hoard.id;
                 document.getElementById('input-pet-name').value = hoard.petName;
                 document.getElementById('input-hoarder').value = hoard.hoarder;
-                document.getElementById('input-image-base64').value = hoard.image;
+                document.getElementById('input-image-url').value = hoard.image;
                 document.getElementById('input-trend').value = hoard.trend;
                 document.getElementById('input-normal').value = hoard.variants.normal || 0;
                 document.getElementById('input-mythic').value = hoard.variants.mythic || 0;
@@ -609,6 +620,7 @@
                 document.getElementById('preview-thumb').src = hoard.image;
                 document.getElementById('dropzone-prompt').classList.add('hidden');
                 document.getElementById('dropzone-preview').classList.remove('hidden');
+                document.getElementById('upload-status-text').innerText = "Current Image Active";
             } else {
                 title.innerHTML = `<i class="fa-solid fa-plus text-emerald-400"></i><span>Add New Hoard</span>`;
             }
@@ -629,8 +641,32 @@
             const editId = document.getElementById('edit-id').value;
             const petName = document.getElementById('input-pet-name').value.trim();
             const hoarder = document.getElementById('input-hoarder').value.trim();
-            const image = document.getElementById('input-image-base64').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
+            let imageUrl = document.getElementById('input-image-url').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
             const trend = document.getElementById('input-trend').value;
+
+            // ☁️ Upload file to Supabase Storage bucket if a new file was chosen
+            if (selectedFileToUpload) {
+                const fileExt = selectedFileToUpload.name.split('.').pop();
+                const fileName = `${Date.now()}-${Math.random().toString(36.substring(2, 9))}.${fileExt}`;
+                
+                document.getElementById('upload-status-text').innerText = "Uploading to cloud...";
+                
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage
+                    .from('hoard-images')
+                    .upload(fileName, selectedFileToUpload);
+
+                if (uploadError) {
+                    alert("Image upload failed: " + uploadError.message);
+                    return;
+                }
+
+                // Get public URL from Supabase Storage
+                const { data: publicURLData } = supabaseClient.storage
+                    .from('hoard-images')
+                    .getPublicUrl(fileName);
+
+                imageUrl = publicURLData.publicUrl;
+            }
 
             const variants = {
                 normal: parseInt(document.getElementById('input-normal').value) || 0,
@@ -642,31 +678,25 @@
             const totalCount = variants.normal + variants.mythic + variants.shiny + variants.shinyMythic;
 
             if (editId) {
-                await supabaseClient.from('hoards').update({ pet_name: petName, hoarder, image, trend, variants }).eq('id', editId);
+                await supabaseClient.from('hoards').update({ pet_name: petName, hoarder, image: imageUrl, trend, variants }).eq('id', editId);
             } else {
-                await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image, trend, variants }]);
+                await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image: imageUrl, trend, variants }]);
 
-                // 🚀 DISCORD WEBHOOK INTEGRATION (Safe from base64 rejection)
+                // 🚀 DISCORD WEBHOOK INTEGRATION (Now sends the actual public image URL)
                 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
                 
                 const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
                 
-                // If it's a base64 string, omit thumbnail to prevent Discord 400 error, otherwise include the image URL
-                const embedData = {
-                    title: `${petName}`,
-                    description: `Hoarded by **@${hoarder}**\n\n**Trend Status:** ${trendEmoji}\n**Total Count:** \`${totalCount.toLocaleString()}\``,
-                    color: 6316128,
-                    footer: { text: "PletHoards • Pet Hoard Tracker" },
-                    timestamp: new Date().toISOString()
-                };
-
-                if (!image.startsWith('data:image')) {
-                    embedData.thumbnail = { url: image };
-                }
-
                 const discordPayload = {
                     content: "🚨 **New Pet Hoard Tracked!** 🚨",
-                    embeds: [embedData]
+                    embeds: [{
+                        title: `${petName}`,
+                        description: `Hoarded by **@${hoarder}**\n\n**Trend Status:** ${trendEmoji}\n**Total Count:** \`${totalCount.toLocaleString()}\``,
+                        color: 6316128,
+                        thumbnail: { url: imageUrl }, // Perfect public cloud URL for Discord!
+                        footer: { text: "PletHoards • Pet Hoard Tracker" },
+                        timestamp: new Date().toISOString()
+                    }]
                 };
 
                 try {
