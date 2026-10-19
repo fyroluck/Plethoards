@@ -647,7 +647,7 @@
             // ☁️ Upload file to Supabase Storage bucket if a new file was chosen
             if (selectedFileToUpload) {
                 const fileExt = selectedFileToUpload.name.split('.').pop();
-                const fileName = `${Date.now()}-${Math.random().toString(36.substring(2, 9))}.${fileExt}`;
+                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
                 
                 document.getElementById('upload-status-text').innerText = "Uploading to cloud...";
                 
@@ -682,7 +682,7 @@
             } else {
                 await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image: imageUrl, trend, variants }]);
 
-                // 🚀 DISCORD WEBHOOK INTEGRATION (Now sends the actual public image URL)
+                // 🚀 DISCORD WEBHOOK INTEGRATION
                 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
                 
                 const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
@@ -693,7 +693,7 @@
                         title: `${petName}`,
                         description: `Hoarded by **@${hoarder}**\n\n**Trend Status:** ${trendEmoji}\n**Total Count:** \`${totalCount.toLocaleString()}\``,
                         color: 6316128,
-                        thumbnail: { url: imageUrl }, // Perfect public cloud URL for Discord!
+                        thumbnail: { url: imageUrl },
                         footer: { text: "PletHoards • Pet Hoard Tracker" },
                         timestamp: new Date().toISOString()
                     }]
