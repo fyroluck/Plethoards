@@ -1,12 +1,9 @@
-Here is your complete, final index.html file containing your Supabase backend integration, Discord OAuth moderator permissions, and the bulletproof Discord webhook notification fix:
-
-HTML
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Pet Hoard Tracker</title>
+    <title>PletHoards - Pet Hoard Tracker</title>
     <!-- Tailwind CSS CDN -->
     <script src="https://cdn.tailwindcss.com"></script>
     <script>
@@ -66,7 +63,7 @@ HTML
                 </div>
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                        Pet Hoard Tracker
+                        PletHoards
                         <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.5</span>
                     </h1>
                     <p class="text-xs text-slate-400 hidden sm:block">Track economy hoards & rare pet distributions</p>
@@ -178,7 +175,7 @@ HTML
     <!-- FOOTER -->
     <footer class="border-t border-slate-800/60 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
-            <p>© 2026 Pet Hoard Tracker • Community Market Intel</p>
+            <p>© 2026 PletHoards • Pet Hoard Tracker</p>
             <p class="flex items-center gap-1">
                 <span>Verified via Discord OAuth & Supabase</span>
                 <i class="fa-solid fa-shield-halved text-indigo-400 ml-1"></i>
@@ -362,10 +359,8 @@ HTML
                 const name = meta.full_name || meta.name || 'Discord User';
                 const avatar = meta.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
 
-                // Extract real Discord numeric ID from metadata sub or provider id
                 const discordId = meta.sub || (currentUser.identities && currentUser.identities[0] ? currentUser.identities[0].identity_data?.sub : null) || currentUser.id;
 
-                // Check if logged-in user ID matches your admin whitelist
                 isUserMod = ADMIN_DISCORD_IDS.some(id => id.toString() === discordId.toString() || id.toString() === currentUser.id.toString());
 
                 document.getElementById('user-name').innerText = name;
@@ -651,23 +646,20 @@ HTML
             } else {
                 await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image, trend, variants }]);
 
-                // 🚀 DISCORD WEBHOOK INTEGRATION (Safe from 400 errors)
+                // 🚀 DISCORD WEBHOOK INTEGRATION
                 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
                 
                 const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
                 
-                const safeThumbnailUrl = image.startsWith('data:image') 
-                    ? 'https://images.unsplash.com/photo-1534447677768-be436bb09401?auto=format&fit=crop&w=200&q=80' 
-                    : image;
-                
+                // If it's a data URL, we send it directly or use image as thumbnail if small enough, otherwise use image
                 const discordPayload = {
                     content: "🚨 **New Pet Hoard Tracked!** 🚨",
                     embeds: [{
                         title: `${petName}`,
                         description: `Hoarded by **@${hoarder}**\n\n**Trend Status:** ${trendEmoji}\n**Total Count:** \`${totalCount.toLocaleString()}\``,
                         color: 6316128,
-                        thumbnail: { url: safeThumbnailUrl },
-                        footer: { text: "Pet Hoard Tracker • Community Market Intel" },
+                        thumbnail: { url: image.startsWith('data:image') ? 'https://images.unsplash.com/photo-1618005182384-a83a8bd57fbe?auto=format&fit=crop&w=200&q=80' : image },
+                        footer: { text: "PletHoards • Pet Hoard Tracker" },
                         timestamp: new Date().toISOString()
                     }]
                 };
