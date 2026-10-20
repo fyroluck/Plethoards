@@ -89,7 +89,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.12</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.13</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -161,7 +161,7 @@
                     <img src="trendunstable.png" alt="Unstable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⚡', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-indigo-400 text-xs">Unstable</div>
-                        <p class="text-[11px] text-slate-300">Volatile fluctuation</p>
+                        <p class="text-[11px] text-slate-300">Hoarder may cash any moment</p>
                     </div>
                 </div>
 
@@ -170,7 +170,7 @@
                     <img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-rose-400 text-xs">Dropping</div>
-                        <p class="text-[11px] text-slate-300">Cashing out variant</p>
+                        <p class="text-[11px] text-slate-300">Actively cashing out</p>
                     </div>
                 </div>
             </div>
@@ -278,6 +278,7 @@
                             <option value="stable" selected>⏸️ Stable</option>
                             <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
+                            <option value="none">🚫 N/A (None)</option>
                         </select>
                     </div>
 
@@ -290,6 +291,7 @@
                             <option value="stable" selected>⏸️ Stable</option>
                             <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
+                            <option value="none">🚫 N/A (None)</option>
                         </select>
                     </div>
 
@@ -302,6 +304,7 @@
                             <option value="stable" selected>⏸️ Stable</option>
                             <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
+                            <option value="none">🚫 N/A (None)</option>
                         </select>
                     </div>
 
@@ -314,6 +317,7 @@
                             <option value="stable" selected>⏸️ Stable</option>
                             <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
+                            <option value="none">🚫 N/A (None)</option>
                         </select>
                     </div>
                 </div>
@@ -435,13 +439,11 @@
         function setTrendFilter(trend) {
             activeTrendFilter = trend;
 
-            // Clear all key active states
             ['rising', 'stable', 'unstable', 'dropping'].forEach(t => {
                 const el = document.getElementById(`key-${t}`);
                 if (el) el.classList.remove('active');
             });
 
-            // Highlight selected key
             if (trend !== 'all') {
                 const selectedEl = document.getElementById(`key-${trend}`);
                 if (selectedEl) selectedEl.classList.add('active');
@@ -510,6 +512,7 @@
         }
 
         function getVariantTrendIconHTML(trend) {
+            if (trend === 'none') return ''; // N/A status prints no icon
             let imgName = 'trendstable.png';
             if (trend === 'rising') imgName = 'trendrising.png';
             if (trend === 'unstable') imgName = 'trendunstable.png';
@@ -529,7 +532,6 @@
                 const matchesSearch = hoard.petName.toLowerCase().includes(searchQuery) || hoard.hoarder.toLowerCase().includes(searchQuery);
                 if (!matchesSearch) return false;
 
-                // Trend Key Filter Logic
                 if (activeTrendFilter !== 'all') {
                     const hasTrend = Object.values(hoard.variants).some(v => getVariantTrend(v) === activeTrendFilter && getVariantCount(v) > 0);
                     if (!hasTrend) return false;
@@ -769,7 +771,6 @@
                 variants 
             };
 
-            // Safe Database Write Handling
             if (editId) {
                 let { error: updateError } = await supabaseClient.from('hoards').update(payload).eq('id', editId);
                 
