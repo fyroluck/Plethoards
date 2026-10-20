@@ -64,7 +64,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.8</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.9</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -109,19 +109,26 @@
                 <span class="text-xs text-purple-300/60">Indicates activity on individual pet variants</span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-3">
+            <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
                 <div class="flex items-center space-x-3 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/30">
                     <img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-emerald-400 text-xs">Rising</div>
-                        <p class="text-[11px] text-slate-300">Actively collecting variant</p>
+                        <p class="text-[11px] text-slate-300">Actively collecting</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3 bg-amber-950/30 p-3 rounded-xl border border-amber-500/30">
                     <img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
-                        <div class="font-semibold text-amber-400 text-xs">Stable / Paused</div>
+                        <div class="font-semibold text-amber-400 text-xs">Stable</div>
                         <p class="text-[11px] text-slate-300">Holding steady count</p>
+                    </div>
+                </div>
+                <div class="flex items-center space-x-3 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/30">
+                    <span class="text-xl flex-shrink-0">⚡</span>
+                    <div>
+                        <div class="font-semibold text-indigo-400 text-xs">Unstable</div>
+                        <p class="text-[11px] text-slate-300">Volatile fluctuation</p>
                     </div>
                 </div>
                 <div class="flex items-center space-x-3 bg-rose-950/30 p-3 rounded-xl border border-rose-500/30">
@@ -234,6 +241,7 @@
                         <select id="input-normal-trend" class="px-2 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-xs text-slate-300">
                             <option value="rising">📈 Rising</option>
                             <option value="stable" selected>⏸️ Stable</option>
+                            <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
                         </select>
                     </div>
@@ -245,6 +253,7 @@
                         <select id="input-shiny-trend" class="px-2 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-xs text-slate-300">
                             <option value="rising">📈 Rising</option>
                             <option value="stable" selected>⏸️ Stable</option>
+                            <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
                         </select>
                     </div>
@@ -256,6 +265,7 @@
                         <select id="input-mythic-trend" class="px-2 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-xs text-slate-300">
                             <option value="rising">📈 Rising</option>
                             <option value="stable" selected>⏸️ Stable</option>
+                            <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
                         </select>
                     </div>
@@ -267,6 +277,7 @@
                         <select id="input-shinymythic-trend" class="px-2 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-xs text-slate-300">
                             <option value="rising">📈 Rising</option>
                             <option value="stable" selected>⏸️ Stable</option>
+                            <option value="unstable">⚡ Unstable</option>
                             <option value="dropping">📉 Dropping</option>
                         </select>
                     </div>
@@ -323,7 +334,7 @@
                 currentUser = session.user;
                 const meta = currentUser.user_metadata || {};
                 const name = meta.full_name || meta.name || 'Discord User';
-                const avatar = meta.avatar_url || 'https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
+                const avatar = meta.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
 
                 const discordId = meta.sub || (currentUser.identities && currentUser.identities[0] ? currentUser.identities[0].identity_data?.sub : null) || currentUser.id;
 
@@ -426,11 +437,10 @@
         }
 
         function getVariantTrendIconHTML(trend) {
-            let imgName = 'trendstable.png';
-            if (trend === 'rising') imgName = 'trendrising.png';
-            if (trend === 'dropping') imgName = 'trenddropping.png';
-
-            return `<img src="${imgName}" alt="${trend}" onerror="this.remove()" class="w-4 h-4 object-contain inline-block ml-1">`;
+            if (trend === 'rising') return `<img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
+            if (trend === 'dropping') return `<img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
+            if (trend === 'unstable') return `<span class="text-xs ml-1">⚡</span>`;
+            return `<img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
         }
 
         function renderHoards() {
@@ -679,7 +689,6 @@
             if (editId) {
                 let { error: updateError } = await supabaseClient.from('hoards').update(payload).eq('id', editId);
                 
-                // Fallback if is_majority column is not created in database schema yet
                 if (updateError && updateError.message.includes('is_majority')) {
                     delete payload.is_majority;
                     const fallbackRes = await supabaseClient.from('hoards').update(payload).eq('id', editId);
@@ -693,7 +702,6 @@
             } else {
                 let { error: insertError } = await supabaseClient.from('hoards').insert([payload]);
                 
-                // Fallback if is_majority column is not created in database schema yet
                 if (insertError && insertError.message.includes('is_majority')) {
                     delete payload.is_majority;
                     const fallbackRes = await supabaseClient.from('hoards').insert([payload]);
