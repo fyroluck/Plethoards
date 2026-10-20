@@ -51,13 +51,24 @@
             backdrop-filter: blur(12px);
             border: 1px solid rgba(168, 85, 247, 0.15);
         }
+        .key-btn {
+            transition: all 0.2s ease-in-out;
+            cursor: pointer;
+        }
+        .key-btn:hover {
+            transform: translateY(-2px);
+        }
+        .key-btn.active {
+            border-color: rgba(250, 204, 21, 0.8) !important;
+            box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
 
-    <!-- BANNED LOLMAN SCREEN (Hidden by default) -->
+    <!-- BANNED LOLMAN SCREEN -->
     <div id="banned-screen" class="fixed inset-0 z-50 bg-[#080a14] flex flex-col items-center justify-center p-4 hidden">
-        <div class="glass-panel max-md text-center p-8 rounded-2xl border border-rose-500/40 shadow-2xl space-y-4">
+        <div class="glass-panel max-w-md text-center p-8 rounded-2xl border border-rose-500/40 shadow-2xl space-y-4">
             <i class="fa-solid fa-ban text-5xl text-rose-500 animate-pulse"></i>
             <h1 class="text-2xl font-extrabold text-white">BANNED</h1>
             <p class="text-sm text-slate-300">lolman detected</p>
@@ -78,7 +89,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.11</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.12</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -86,13 +97,11 @@
 
             <!-- Discord Auth Area -->
             <div id="auth-container">
-                <!-- Logged Out State -->
                 <button id="discord-login-btn" onclick="loginWithDiscord()" class="flex items-center space-x-2 bg-discord hover:bg-discordHover text-white px-4 py-2.5 rounded-xl font-medium shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 text-sm">
                     <i class="fa-brands fa-discord text-xl"></i>
                     <span>Login with Discord</span>
                 </button>
 
-                <!-- Logged In State (Hidden by default) -->
                 <div id="user-profile" class="hidden flex items-center space-x-3 bg-slate-900/80 p-1.5 pr-4 rounded-xl border border-purple-900/40">
                     <img id="user-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-lg border border-purple-500/30 object-cover">
                     <div class="text-left">
@@ -113,39 +122,51 @@
     <!-- MAIN CONTENT WRAPPER -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
 
-        <!-- TREND KEY LEGEND BAR -->
+        <!-- INTERACTIVE TREND KEY & FILTER HEADER -->
         <section class="glass-panel rounded-2xl p-5 border border-purple-900/30 shadow-2xl">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3 border-b border-purple-900/30">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-key text-yellow-400 text-sm"></i>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-purple-200">Variant Trend Key</h2>
+                    <i class="fa-solid fa-filter text-yellow-400 text-sm"></i>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-purple-200">Filter By Trend Key</h2>
                 </div>
-                <span class="text-xs text-purple-300/60">Indicates activity on individual pet variants</span>
+                <div class="flex items-center space-x-2">
+                    <button id="reset-filter-btn" onclick="setTrendFilter('all')" class="text-xs font-semibold px-3 py-1 bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 rounded-lg border border-purple-800/40 transition-colors">
+                        Show All
+                    </button>
+                    <span class="text-xs text-purple-300/60 hidden sm:inline">• Click a key below to filter</span>
+                </div>
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <div class="flex items-center space-x-3 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/30">
+                <!-- Rising -->
+                <div id="key-rising" onclick="setTrendFilter('rising')" class="key-btn flex items-center space-x-3 bg-emerald-950/30 hover:bg-emerald-950/60 p-3 rounded-xl border border-emerald-500/30">
                     <img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-emerald-400 text-xs">Rising</div>
                         <p class="text-[11px] text-slate-300">Actively collecting</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-3 bg-amber-950/30 p-3 rounded-xl border border-amber-500/30">
+
+                <!-- Stable -->
+                <div id="key-stable" onclick="setTrendFilter('stable')" class="key-btn flex items-center space-x-3 bg-amber-950/30 hover:bg-amber-950/60 p-3 rounded-xl border border-amber-500/30">
                     <img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-amber-400 text-xs">Stable</div>
                         <p class="text-[11px] text-slate-300">Holding steady count</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-3 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/30">
+
+                <!-- Unstable -->
+                <div id="key-unstable" onclick="setTrendFilter('unstable')" class="key-btn flex items-center space-x-3 bg-indigo-950/30 hover:bg-indigo-950/60 p-3 rounded-xl border border-indigo-500/30">
                     <img src="trendunstable.png" alt="Unstable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⚡', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-indigo-400 text-xs">Unstable</div>
                         <p class="text-[11px] text-slate-300">Volatile fluctuation</p>
                     </div>
                 </div>
-                <div class="flex items-center space-x-3 bg-rose-950/30 p-3 rounded-xl border border-rose-500/30">
+
+                <!-- Dropping -->
+                <div id="key-dropping" onclick="setTrendFilter('dropping')" class="key-btn flex items-center space-x-3 bg-rose-950/30 hover:bg-rose-950/60 p-3 rounded-xl border border-rose-500/30">
                     <img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-rose-400 text-xs">Dropping</div>
@@ -155,29 +176,14 @@
             </div>
         </section>
 
-        <!-- CONTROLS & FILTERS BAR -->
-        <section class="flex flex-col lg:flex-row items-stretch lg:items-center justify-between gap-4">
+        <!-- CONTROLS BAR -->
+        <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <div class="relative flex-1 max-w-md">
                 <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60 text-sm"></i>
                 <input type="text" id="search-input" oninput="renderHoards()" placeholder="Search pet or hoarder name..." class="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-purple-900/40 rounded-xl text-sm text-slate-100 placeholder-purple-300/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
             </div>
 
-            <!-- RESTORED FILTER OPTIONS -->
-            <div class="flex flex-wrap items-center gap-3">
-                <select id="filter-variant" onchange="renderHoards()" class="px-3 py-2.5 bg-slate-950/80 border border-purple-900/40 rounded-xl text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <option value="all">Filter Variant: All</option>
-                    <option value="normal">Normal Only</option>
-                    <option value="shiny">Shiny Only</option>
-                    <option value="mythic">Mythic Only</option>
-                    <option value="shinyMythic">Shiny Mythic Only</option>
-                </select>
-
-                <select id="filter-sort" onchange="renderHoards()" class="px-3 py-2.5 bg-slate-950/80 border border-purple-900/40 rounded-xl text-xs text-slate-300 focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    <option value="highest">Sort: Highest Total</option>
-                    <option value="lowest">Sort: Lowest Total</option>
-                    <option value="name">Sort: Pet Name (A-Z)</option>
-                </select>
-
+            <div class="flex items-center justify-end space-x-3">
                 <button id="add-hoard-btn" onclick="openHoardEditorModal()" class="hidden items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition-all">
                     <i class="fa-solid fa-plus"></i>
                     <span>Add New Hoard</span>
@@ -191,7 +197,7 @@
             <div id="empty-state" class="hidden text-center py-16 glass-panel rounded-2xl border border-purple-900/30">
                 <i class="fa-solid fa-ghost text-4xl text-purple-400/40 mb-3"></i>
                 <h3 class="text-lg font-bold text-slate-300">No hoards found</h3>
-                <p class="text-sm text-purple-300/50 mt-1">Try searching or clearing filters.</p>
+                <p class="text-sm text-purple-300/50 mt-1">Try clearing filters or searching for another name.</p>
             </div>
         </section>
     </main>
@@ -331,6 +337,7 @@
         let currentUser = null;
         let isUserMod = false;
         let lolmanClicks = 0;
+        let activeTrendFilter = 'all';
 
         const ADMIN_DISCORD_IDS = [
             "1024720234357194814"
@@ -381,7 +388,6 @@
                     const roleData = await roleCheckRes.json();
                     hasEditorRole = hasEditorRole || (roleData.isEditor === true);
                     
-                    // Check if user has the specific banned role ID
                     if (roleData.roles && Array.isArray(roleData.roles)) {
                         hasBannedRole = roleData.roles.includes(BANNED_ROLE_ID);
                     }
@@ -389,7 +395,6 @@
                     console.error("Role check error:", err);
                 }
 
-                // Trigger Banned Screen if user has role 1562190693634408598
                 if (hasBannedRole) {
                     document.getElementById('banned-screen').classList.remove('hidden');
                 }
@@ -425,6 +430,24 @@
                 lolmanClicks = 0;
                 document.getElementById('lolman-count').innerText = lolmanClicks;
             }
+        }
+
+        function setTrendFilter(trend) {
+            activeTrendFilter = trend;
+
+            // Clear all key active states
+            ['rising', 'stable', 'unstable', 'dropping'].forEach(t => {
+                const el = document.getElementById(`key-${t}`);
+                if (el) el.classList.remove('active');
+            });
+
+            // Highlight selected key
+            if (trend !== 'all') {
+                const selectedEl = document.getElementById(`key-${trend}`);
+                if (selectedEl) selectedEl.classList.add('active');
+            }
+
+            renderHoards();
         }
 
         function updateAuthUI() {
@@ -499,8 +522,6 @@
             const grid = document.getElementById('hoards-grid');
             const emptyState = document.getElementById('empty-state');
             const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
-            const filterVariant = document.getElementById('filter-variant').value;
-            const filterSort = document.getElementById('filter-sort').value;
 
             grid.innerHTML = '';
 
@@ -508,20 +529,13 @@
                 const matchesSearch = hoard.petName.toLowerCase().includes(searchQuery) || hoard.hoarder.toLowerCase().includes(searchQuery);
                 if (!matchesSearch) return false;
 
-                if (filterVariant !== 'all') {
-                    const variantCount = getVariantCount(hoard.variants[filterVariant]);
-                    if (variantCount <= 0) return false;
+                // Trend Key Filter Logic
+                if (activeTrendFilter !== 'all') {
+                    const hasTrend = Object.values(hoard.variants).some(v => getVariantTrend(v) === activeTrendFilter && getVariantCount(v) > 0);
+                    if (!hasTrend) return false;
                 }
 
                 return true;
-            });
-
-            // Sorting logic
-            filtered.sort((a, b) => {
-                if (filterSort === 'highest') return getTotalCount(b.variants) - getTotalCount(a.variants);
-                if (filterSort === 'lowest') return getTotalCount(a.variants) - getTotalCount(b.variants);
-                if (filterSort === 'name') return a.petName.localeCompare(b.petName);
-                return 0;
             });
 
             if (filtered.length === 0) {
