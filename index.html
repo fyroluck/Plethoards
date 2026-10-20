@@ -14,9 +14,11 @@
                     colors: {
                         discord: '#5865F2',
                         discordHover: '#4752C4',
-                        darkBg: '#0f172a',
-                        cardBg: '#1e293b',
-                        cardBorder: '#334155'
+                        themeBg: '#080a14',
+                        cardBg: '#101426',
+                        cardBorder: '#1b2038',
+                        accentYellow: '#facc15',
+                        accentPurple: '#a855f7'
                     }
                 }
             }
@@ -31,40 +33,40 @@
     <style>
         body {
             font-family: 'Inter', sans-serif;
-            background-color: #0b0f19;
+            background-color: #080a14;
             color: #f1f5f9;
         }
         .custom-scrollbar::-webkit-scrollbar {
             width: 6px;
         }
         .custom-scrollbar::-webkit-scrollbar-track {
-            background: #0f172a;
+            background: #080a14;
         }
         .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #334155;
+            background: #1b2038;
             border-radius: 4px;
         }
         .glass-panel {
-            background: rgba(30, 41, 59, 0.7);
+            background: rgba(16, 20, 38, 0.85);
             backdrop-filter: blur(12px);
-            border: 1px solid rgba(255, 255, 255, 0.08);
+            border: 1px solid rgba(168, 85, 247, 0.15);
         }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
 
     <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-30 glass-panel border-b border-slate-800">
+    <header class="sticky top-0 z-30 glass-panel border-b border-purple-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand Title -->
             <div class="flex items-center space-x-3">
-                <img src="Untitled Project (3).jpg" alt="PletHoards Logo" class="w-11 h-11 rounded-xl object-cover border border-indigo-500/30 shadow-md">
+                <img src="Untitled Project (3).jpg" alt="PletHoards Logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v2.0</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.1</span>
                     </h1>
-                    <p class="text-xs text-slate-400 hidden sm:block">Track economy hoards & rare pet distributions</p>
+                    <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
             </div>
 
@@ -77,14 +79,14 @@
                 </button>
 
                 <!-- Logged In State (Hidden by default) -->
-                <div id="user-profile" class="hidden flex items-center space-x-3 bg-slate-800/80 p-1.5 pr-4 rounded-xl border border-slate-700">
-                    <img id="user-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-lg border border-slate-600 object-cover">
+                <div id="user-profile" class="hidden flex items-center space-x-3 bg-slate-900/80 p-1.5 pr-4 rounded-xl border border-purple-900/40">
+                    <img id="user-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-lg border border-purple-500/30 object-cover">
                     <div class="text-left">
                         <div class="flex items-center space-x-1.5">
                             <span id="user-name" class="font-bold text-sm text-white">Username</span>
                             <span id="mod-badge" class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded border border-amber-500/40 hidden">EDITOR</span>
                         </div>
-                        <p id="user-role-text" class="text-xs text-slate-400">Server Member</p>
+                        <p id="user-role-text" class="text-xs text-purple-300/60">Server Member</p>
                     </div>
                     <button onclick="logoutDiscord()" class="ml-2 text-slate-400 hover:text-red-400 p-1.5 transition-colors" title="Logout">
                         <i class="fa-solid fa-right-from-bracket"></i>
@@ -98,19 +100,19 @@
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
 
         <!-- TREND KEY LEGEND BAR -->
-        <section class="glass-panel rounded-2xl p-5 border border-slate-800 shadow-xl">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-800/80">
+        <section class="glass-panel rounded-2xl p-5 border border-purple-900/30 shadow-2xl">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3 border-b border-purple-900/30">
                 <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-key text-amber-400 text-sm"></i>
-                    <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Trend Status Key</h2>
+                    <i class="fa-solid fa-key text-yellow-400 text-sm"></i>
+                    <h2 class="text-sm font-bold uppercase tracking-wider text-purple-200">Trend Status Key</h2>
                 </div>
-                <span class="text-xs text-slate-400">Reflects active hoarding behavior</span>
+                <span class="text-xs text-purple-300/60">Reflects active hoarding behavior</span>
             </div>
             
             <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
                 <!-- Rising -->
-                <div class="flex items-center space-x-3 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/20">
-                    <img src="image_1b0cb2.png" alt="Rising" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                <div class="flex items-center space-x-3 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/30">
+                    <img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xl flex-shrink-0'}))" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-emerald-400 text-xs">Rising</div>
                         <p class="text-[11px] text-slate-300">Actively collecting more</p>
@@ -118,8 +120,8 @@
                 </div>
 
                 <!-- Stable -->
-                <div class="flex items-center space-x-3 bg-amber-950/30 p-3 rounded-xl border border-amber-500/20">
-                    <img src="image_1b0d13.png" alt="Stable" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                <div class="flex items-center space-x-3 bg-amber-950/30 p-3 rounded-xl border border-amber-500/30">
+                    <img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xl flex-shrink-0'}))" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-amber-400 text-xs">Stable / Paused</div>
                         <p class="text-[11px] text-slate-300">Holding steady count</p>
@@ -127,8 +129,8 @@
                 </div>
 
                 <!-- Dropping -->
-                <div class="flex items-center space-x-3 bg-rose-950/30 p-3 rounded-xl border border-rose-500/20">
-                    <img src="image_1b0cd7.png" alt="Dropping" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                <div class="flex items-center space-x-3 bg-rose-950/30 p-3 rounded-xl border border-rose-500/30">
+                    <img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xl flex-shrink-0'}))" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-rose-400 text-xs">Dropping</div>
                         <p class="text-[11px] text-slate-300">Cashing out</p>
@@ -136,19 +138,19 @@
                 </div>
 
                 <!-- Owns Majority of Circ -->
-                <div class="flex items-center space-x-3 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/20">
-                    <img src="image_1b0d4c.png" alt="Majority" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                <div class="flex items-center space-x-3 bg-indigo-950/40 p-3 rounded-xl border border-indigo-500/30">
+                    <img src="trendmajority.png" alt="Majority" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '👑', className: 'text-xl flex-shrink-0'}))" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-indigo-300 text-xs">Owns Majority</div>
                         <p class="text-[11px] text-slate-300">Owns majority of circ</p>
                     </div>
                 </div>
 
-                <!-- Cash Out at Any Moment -->
-                <div class="flex items-center space-x-3 bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
-                    <img src="image_1b0d8b.png" alt="Cash Out" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                <!-- Unstable -->
+                <div class="flex items-center space-x-3 bg-purple-950/40 p-3 rounded-xl border border-purple-500/30">
+                    <img src="trendunstable.png" alt="Unstable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⚠️', className: 'text-xl flex-shrink-0'}))" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
-                        <div class="font-semibold text-purple-300 text-xs">May Cash Out</div>
+                        <div class="font-semibold text-purple-300 text-xs">Unstable</div>
                         <p class="text-[11px] text-slate-300">May cash out anytime</p>
                     </div>
                 </div>
@@ -158,18 +160,18 @@
         <!-- CONTROLS BAR -->
         <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
             <div class="relative flex-1 max-w-md">
-                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-400 text-sm"></i>
-                <input type="text" id="search-input" oninput="renderHoards()" placeholder="Search pet or hoarder name..." class="w-full pl-10 pr-4 py-2.5 bg-slate-900 border border-slate-700/80 rounded-xl text-sm text-slate-100 placeholder-slate-500 focus:outline-none focus:ring-2 focus:ring-indigo-500 focus:border-transparent transition-all">
+                <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60 text-sm"></i>
+                <input type="text" id="search-input" oninput="renderHoards()" placeholder="Search pet or hoarder name..." class="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-purple-900/40 rounded-xl text-sm text-slate-100 placeholder-purple-300/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <div class="bg-slate-900 p-1 rounded-xl border border-slate-800 flex flex-wrap gap-1">
-                    <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition-colors">All</button>
-                    <button onclick="setFilter('rising')" id="filter-rising" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Rising</button>
-                    <button onclick="setFilter('stable')" id="filter-stable" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Stable</button>
-                    <button onclick="setFilter('dropping')" id="filter-dropping" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Dropping</button>
-                    <button onclick="setFilter('majority')" id="filter-majority" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Majority</button>
-                    <button onclick="setFilter('cashout')" id="filter-cashout" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Cash Out</button>
+                <div class="bg-slate-950/80 p-1 rounded-xl border border-purple-900/40 flex flex-wrap gap-1">
+                    <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-600 text-white transition-colors">All</button>
+                    <button onclick="setFilter('rising')" id="filter-rising" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-purple-950/50 transition-colors">Rising</button>
+                    <button onclick="setFilter('stable')" id="filter-stable" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-purple-950/50 transition-colors">Stable</button>
+                    <button onclick="setFilter('dropping')" id="filter-dropping" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-purple-950/50 transition-colors">Dropping</button>
+                    <button onclick="setFilter('majority')" id="filter-majority" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-purple-950/50 transition-colors">Majority</button>
+                    <button onclick="setFilter('unstable')" id="filter-unstable" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-purple-950/50 transition-colors">Unstable</button>
                 </div>
 
                 <button id="add-hoard-btn" onclick="openHoardEditorModal()" class="hidden items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition-all">
@@ -182,29 +184,29 @@
         <!-- HOARDS GRID CONTAINER -->
         <section>
             <div id="hoards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-            <div id="empty-state" class="hidden text-center py-16 glass-panel rounded-2xl border border-slate-800">
-                <i class="fa-solid fa-ghost text-4xl text-slate-600 mb-3"></i>
-                <h3 class="text-lg font-bold text-slate-300">No hoards found</h3>
-                <p class="text-sm text-slate-500 mt-1">Try adjusting your search criteria or filters.</p>
+            <div id="empty-state" class="hidden text-center py-16 glass-panel rounded-2xl border border-purple-900/30">
+                <i class="fa-solid fa-ghost text-4xl text-purple-400/40 mb-3"></i>
+                <h3 class="text-lg font-bold text-purple-200">No hoards found</h3>
+                <p class="text-sm text-purple-300/50 mt-1">Try adjusting your search criteria or filters.</p>
             </div>
         </section>
     </main>
 
     <!-- FOOTER -->
-    <footer class="border-t border-slate-800/60 bg-slate-950 py-6 mt-12 text-center text-xs text-slate-500">
+    <footer class="border-t border-purple-900/30 bg-[#05060d] py-6 mt-12 text-center text-xs text-purple-300/50">
         <div class="max-w-7xl mx-auto px-4 flex flex-col sm:flex-row items-center justify-between gap-3">
             <p>© 2026 PletHoards • Pet Hoard Tracker</p>
             <p class="flex items-center gap-1">
                 <span>Verified via Discord OAuth & Supabase</span>
-                <i class="fa-solid fa-shield-halved text-indigo-400 ml-1"></i>
+                <i class="fa-solid fa-shield-halved text-purple-400 ml-1"></i>
             </p>
         </div>
     </footer>
 
     <!-- MODAL: MODERATOR ADD / EDIT HOARD -->
-    <div id="hoard-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
-        <div class="glass-panel bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
-            <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
+    <div id="hoard-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
+        <div class="glass-panel bg-[#0d1021] border border-purple-800/40 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
+            <div class="flex items-center justify-between pb-4 border-b border-purple-900/30 mb-4">
                 <h3 id="editor-title" class="text-lg font-bold text-white flex items-center gap-2">
                     <i class="fa-solid fa-pen-to-square text-amber-400"></i>
                     <span>Add New Hoard</span>
@@ -220,25 +222,25 @@
 
                 <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Pet Name</label>
-                        <input type="text" id="input-pet-name" required placeholder="e.g. Celestial Dragon" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-semibold text-purple-200 mb-1">Pet Name</label>
+                        <input type="text" id="input-pet-name" required placeholder="e.g. Celestial Dragon" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                     <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Hoarder Username</label>
-                        <input type="text" id="input-hoarder" required placeholder="e.g. ShadowCollector" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-indigo-500">
+                        <label class="block text-xs font-semibold text-purple-200 mb-1">Hoarder Username</label>
+                        <input type="text" id="input-hoarder" required placeholder="e.g. ShadowCollector" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
                     </div>
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pet PNG Image</label>
-                    <div id="drop-zone" class="border-2 border-dashed border-slate-700 hover:border-indigo-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition-colors relative flex flex-col items-center justify-center">
+                    <label class="block text-xs font-semibold text-purple-200 mb-1">Pet PNG Image</label>
+                    <div id="drop-zone" class="border-2 border-dashed border-purple-900/40 hover:border-purple-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition-colors relative flex flex-col items-center justify-center">
                         <input type="file" id="image-file-input" accept="image/png, image/jpeg, image/webp" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
                         <div id="dropzone-prompt" class="space-y-1">
-                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-indigo-400 mb-1"></i>
-                            <p class="text-xs font-medium text-slate-300">Drag & drop pet PNG here, or <span class="text-indigo-400 underline">browse</span></p>
+                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-purple-400 mb-1"></i>
+                            <p class="text-xs font-medium text-purple-200">Drag & drop pet PNG here, or <span class="text-purple-400 underline">browse</span></p>
                         </div>
                         <div id="dropzone-preview" class="hidden flex items-center space-x-3">
-                            <img id="preview-thumb" src="" class="w-12 h-12 rounded-lg object-cover border border-slate-700">
+                            <img id="preview-thumb" src="" class="w-12 h-12 rounded-lg object-cover border border-purple-800/40">
                             <div class="text-left">
                                 <p class="text-xs font-bold text-emerald-400" id="upload-status-text">Image Loaded Successfully!</p>
                             </div>
@@ -247,29 +249,29 @@
                 </div>
 
                 <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Trend Status</label>
-                    <select id="input-trend" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white">
+                    <label class="block text-xs font-semibold text-purple-200 mb-1">Trend Status</label>
+                    <select id="input-trend" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white">
                         <option value="rising">📈 Rising (Actively collecting more)</option>
                         <option value="stable">⏸️ Stable / Paused (Holding steady)</option>
                         <option value="dropping">📉 Dropping (Cashing out)</option>
                         <option value="majority">👑 Owns Majority of Circ</option>
-                        <option value="cashout">⚠️ Hoarding may cash out at any moment</option>
+                        <option value="unstable">⚠️ Unstable (May cash out anytime)</option>
                     </select>
                 </div>
 
-                <div class="pt-2 border-t border-slate-800">
-                    <label class="block text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Variant Quantities</label>
+                <div class="pt-2 border-t border-purple-900/30">
+                    <label class="block text-xs font-bold text-purple-300 uppercase tracking-wider mb-2">Variant Quantities</label>
                     <div class="grid grid-cols-2 gap-3">
-                        <div><label class="block text-xs text-slate-400 mb-1">Normal</label><input type="number" id="input-normal" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white"></div>
-                        <div><label class="block text-xs text-amber-400 mb-1">Shiny</label><input type="number" id="input-shiny" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white"></div>
-                        <div><label class="block text-xs text-purple-400 mb-1">Mythic</label><input type="number" id="input-mythic" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white"></div>
-                        <div><label class="block text-xs text-cyan-400 mb-1">Shiny Mythic</label><input type="number" id="input-shinymythic" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white"></div>
+                        <div><label class="block text-xs text-slate-400 mb-1">Normal</label><input type="number" id="input-normal" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white"></div>
+                        <div><label class="block text-xs text-amber-400 mb-1">Shiny</label><input type="number" id="input-shiny" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white"></div>
+                        <div><label class="block text-xs text-purple-400 mb-1">Mythic</label><input type="number" id="input-mythic" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white"></div>
+                        <div><label class="block text-xs text-cyan-400 mb-1">Shiny Mythic</label><input type="number" id="input-shinymythic" min="0" value="0" required class="w-full px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white"></div>
                     </div>
                 </div>
 
-                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-slate-800">
-                    <button type="button" onclick="closeHoardEditorModal()" class="px-4 py-2 bg-slate-800 hover:bg-slate-700 text-slate-300 rounded-xl text-sm font-medium transition-colors">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-indigo-600 hover:bg-indigo-500 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg">Save Changes</button>
+                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-purple-900/30">
+                    <button type="button" onclick="closeHoardEditorModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-sm font-medium transition-colors">Cancel</button>
+                    <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg">Save Changes</button>
                 </div>
             </form>
         </div>
@@ -386,7 +388,7 @@
                         petName: item.pet_name || item.petName,
                         hoarder: item.hoarder,
                         image: item.image,
-                        trend: item.trend,
+                        trend: item.trend === 'cashout' ? 'unstable' : item.trend, // map legacy cashout
                         variants: item.variants || { normal: 0, shiny: 0, mythic: 0, shinyMythic: 0 }
                     }));
                 }
@@ -431,19 +433,19 @@
                 let borderGlowClass = '';
 
                 if (hoard.trend === 'rising') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5"><img src="image_1b0cb2.png" class="w-3.5 h-3.5 object-contain"> Rising</span>`;
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5"><img src="trendrising.png" onerror="this.remove()" class="w-3.5 h-3.5 object-contain"> Rising</span>`;
                     borderGlowClass = 'hover:border-emerald-500/40';
                 } else if (hoard.trend === 'stable') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1.5"><img src="image_1b0d13.png" class="w-3.5 h-3.5 object-contain"> Stable</span>`;
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1.5"><img src="trendstable.png" onerror="this.remove()" class="w-3.5 h-3.5 object-contain"> Stable</span>`;
                     borderGlowClass = 'hover:border-amber-500/40';
                 } else if (hoard.trend === 'dropping') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1.5"><img src="image_1b0cd7.png" class="w-3.5 h-3.5 object-contain"> Dropping</span>`;
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1.5"><img src="trenddropping.png" onerror="this.remove()" class="w-3.5 h-3.5 object-contain"> Dropping</span>`;
                     borderGlowClass = 'hover:border-rose-500/40';
                 } else if (hoard.trend === 'majority') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5"><img src="image_1b0d4c.png" class="w-3.5 h-3.5 object-contain"> Owns Majority</span>`;
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5"><img src="trendmajority.png" onerror="this.remove()" class="w-3.5 h-3.5 object-contain"> Owns Majority</span>`;
                     borderGlowClass = 'hover:border-indigo-500/40';
-                } else if (hoard.trend === 'cashout') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30 flex items-center gap-1.5"><img src="image_1b0d8b.png" class="w-3.5 h-3.5 object-contain"> May Cash Out</span>`;
+                } else if (hoard.trend === 'unstable' || hoard.trend === 'cashout') {
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30 flex items-center gap-1.5"><img src="trendunstable.png" onerror="this.remove()" class="w-3.5 h-3.5 object-contain"> Unstable</span>`;
                     borderGlowClass = 'hover:border-purple-500/40';
                 } else {
                     trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/30">Stable</span>`;
@@ -453,10 +455,10 @@
                 if (isUserMod) {
                     modActionsHTML = `
                         <div class="absolute top-3 right-3 flex items-center space-x-1.5 z-20">
-                            <button onclick="event.stopPropagation(); openHoardEditorModal('${hoard.id}')" class="p-1.5 bg-slate-800/90 hover:bg-indigo-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700" title="Edit Hoard">
+                            <button onclick="event.stopPropagation(); openHoardEditorModal('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-purple-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Edit Hoard">
                                 <i class="fa-solid fa-pen text-xs"></i>
                             </button>
-                            <button onclick="event.stopPropagation(); deleteHoard('${hoard.id}')" class="p-1.5 bg-slate-800/90 hover:bg-rose-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-slate-700" title="Delete Hoard">
+                            <button onclick="event.stopPropagation(); deleteHoard('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-rose-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Delete Hoard">
                                 <i class="fa-solid fa-trash text-xs"></i>
                             </button>
                         </div>
@@ -464,21 +466,21 @@
                 }
 
                 const cardHTML = `
-                    <div class="group relative glass-panel bg-slate-900/80 rounded-2xl border border-slate-800 ${borderGlowClass} p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between">
+                    <div class="group relative glass-panel bg-[#101426] rounded-2xl border border-purple-900/30 ${borderGlowClass} p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between">
                         ${modActionsHTML}
                         <div>
                             <div class="flex items-start space-x-4 mb-4">
-                                <img src="${hoard.image}" alt="${hoard.petName}" class="w-16 h-16 rounded-xl object-cover border border-slate-700 group-hover:scale-105 transition-transform duration-300">
+                                <img src="${hoard.image}" alt="${hoard.petName}" class="w-16 h-16 rounded-xl object-cover border border-purple-800/40 group-hover:scale-105 transition-transform duration-300">
                                 <div class="pr-12">
-                                    <h3 class="font-bold text-base text-white group-hover:text-indigo-300 transition-colors line-clamp-1">${hoard.petName}</h3>
-                                    <p class="text-xs text-indigo-400 font-medium">@${hoard.hoarder}</p>
+                                    <h3 class="font-bold text-base text-white group-hover:text-yellow-300 transition-colors line-clamp-1">${hoard.petName}</h3>
+                                    <p class="text-xs text-purple-400 font-medium">@${hoard.hoarder}</p>
                                     <div class="mt-2">${trendBadgeHTML}</div>
                                 </div>
                             </div>
 
                             <!-- INLINE VARIANT BREAKDOWN W/ CHECKMARKS -->
                             <div class="space-y-2 mb-4">
-                                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-950/60 border border-purple-900/30">
                                     <span class="text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> Normal</span>
                                     <span class="font-bold text-white">${formatCount(hoard.variants.normal)}</span>
                                 </div>
@@ -497,9 +499,9 @@
                             </div>
                         </div>
 
-                        <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
-                            <span class="text-xs font-semibold text-slate-400">Grand Total Hoard</span>
-                            <span class="text-base font-black text-indigo-400">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
+                        <div class="pt-3 border-t border-purple-900/30 flex items-center justify-between">
+                            <span class="text-xs font-semibold text-purple-300/60">Grand Total Hoard</span>
+                            <span class="text-base font-black text-purple-400">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
                         </div>
                     </div>
                 `;
@@ -509,13 +511,13 @@
 
         function setFilter(filterType) {
             currentFilter = filterType;
-            ['all', 'rising', 'stable', 'dropping', 'majority', 'cashout'].forEach(f => {
+            ['all', 'rising', 'stable', 'dropping', 'majority', 'unstable'].forEach(f => {
                 const btn = document.getElementById(`filter-${f}`);
                 if (btn) {
                     if (f === filterType) {
-                        btn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition-colors';
+                        btn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-purple-600 text-white transition-colors';
                     } else {
-                        btn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors';
+                        btn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-purple-950/50 transition-colors';
                     }
                 }
             });
@@ -540,10 +542,10 @@
 
         const dropZone = document.getElementById('drop-zone');
         ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.add('border-indigo-500', 'bg-indigo-950/20'); }, false);
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.add('border-purple-500', 'bg-purple-950/20'); }, false);
         });
         ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.remove('border-indigo-500', 'bg-indigo-950/20'); }, false);
+            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.remove('border-purple-500', 'bg-purple-950/20'); }, false);
         });
         dropZone.addEventListener('drop', (e) => {
             const file = e.dataTransfer.files[0];
@@ -661,7 +663,7 @@
                                      `• Mythic: \`${formatCount(variants.mythic)}\`\n` +
                                      `• Shiny Mythic: \`${formatCount(variants.shinyMythic)}\`\n\n` +
                                      `**Grand Total Count:** \`${totalCount === 0 ? 'N/A' : totalCount.toLocaleString()}\``,
-                        color: 6316128,
+                        color: 11043063,
                         thumbnail: { url: imageUrl },
                         footer: { text: "PletHoards • Pet Hoard Tracker" },
                         timestamp: new Date().toISOString()
