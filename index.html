@@ -58,13 +58,11 @@
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
             <!-- Brand Title -->
             <div class="flex items-center space-x-3">
-                <div class="p-2.5 bg-indigo-600/20 text-indigo-400 rounded-xl border border-indigo-500/30">
-                    <i class="fa-solid fa-dragon text-2xl"></i>
-                </div>
+                <img src="Untitled Project (3).jpg" alt="PletHoards Logo" class="w-11 h-11 rounded-xl object-cover border border-indigo-500/30 shadow-md">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v1.5</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-indigo-500/10 text-indigo-400 border border-indigo-500/20">v2.0</span>
                     </h1>
                     <p class="text-xs text-slate-400 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -101,7 +99,7 @@
 
         <!-- TREND KEY LEGEND BAR -->
         <section class="glass-panel rounded-2xl p-5 border border-slate-800 shadow-xl">
-            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-3 pb-3 border-b border-slate-800/80">
+            <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3 border-b border-slate-800/80">
                 <div class="flex items-center space-x-2">
                     <i class="fa-solid fa-key text-amber-400 text-sm"></i>
                     <h2 class="text-sm font-bold uppercase tracking-wider text-slate-300">Trend Status Key</h2>
@@ -109,31 +107,49 @@
                 <span class="text-xs text-slate-400">Reflects active hoarding behavior</span>
             </div>
             
-            <div class="grid grid-cols-1 md:grid-cols-3 gap-4">
+            <div class="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-3">
+                <!-- Rising -->
                 <div class="flex items-center space-x-3 bg-emerald-950/30 p-3 rounded-xl border border-emerald-500/20">
-                    <div class="w-10 h-10 rounded-lg bg-emerald-500/20 text-emerald-400 flex items-center justify-center font-bold text-lg flex-shrink-0">📈</div>
+                    <img src="image_1b0cb2.png" alt="Rising" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
-                        <div class="font-semibold text-emerald-400 text-sm flex items-center gap-1.5">
-                            Rising
-                            <span class="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
-                        </div>
-                        <p class="text-xs text-slate-300">Hoarder is actively collecting more</p>
+                        <div class="font-semibold text-emerald-400 text-xs">Rising</div>
+                        <p class="text-[11px] text-slate-300">Actively collecting more</p>
                     </div>
                 </div>
 
+                <!-- Stable -->
                 <div class="flex items-center space-x-3 bg-amber-950/30 p-3 rounded-xl border border-amber-500/20">
-                    <div class="w-10 h-10 rounded-lg bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold text-lg flex-shrink-0">⏸️</div>
+                    <img src="image_1b0d13.png" alt="Stable" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
-                        <div class="font-semibold text-amber-400 text-sm">Stable / Paused</div>
-                        <p class="text-xs text-slate-300">Not collecting more (or cant find any)</p>
+                        <div class="font-semibold text-amber-400 text-xs">Stable / Paused</div>
+                        <p class="text-[11px] text-slate-300">Holding steady count</p>
                     </div>
                 </div>
 
+                <!-- Dropping -->
                 <div class="flex items-center space-x-3 bg-rose-950/30 p-3 rounded-xl border border-rose-500/20">
-                    <div class="w-10 h-10 rounded-lg bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold text-lg flex-shrink-0">📉</div>
+                    <img src="image_1b0cd7.png" alt="Dropping" class="w-8 h-8 rounded object-contain flex-shrink-0">
                     <div>
-                        <div class="font-semibold text-rose-400 text-sm">Dropping</div>
-                        <p class="text-xs text-slate-300">Hoarder is cashing out (dropping)</p>
+                        <div class="font-semibold text-rose-400 text-xs">Dropping</div>
+                        <p class="text-[11px] text-slate-300">Cashing out</p>
+                    </div>
+                </div>
+
+                <!-- Owns Majority of Circ -->
+                <div class="flex items-center space-x-3 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/20">
+                    <img src="image_1b0d4c.png" alt="Majority" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                    <div>
+                        <div class="font-semibold text-indigo-300 text-xs">Owns Majority</div>
+                        <p class="text-[11px] text-slate-300">Owns majority of circ</p>
+                    </div>
+                </div>
+
+                <!-- Cash Out at Any Moment -->
+                <div class="flex items-center space-x-3 bg-purple-950/30 p-3 rounded-xl border border-purple-500/20">
+                    <img src="image_1b0d8b.png" alt="Cash Out" class="w-8 h-8 rounded object-contain flex-shrink-0">
+                    <div>
+                        <div class="font-semibold text-purple-300 text-xs">May Cash Out</div>
+                        <p class="text-[11px] text-slate-300">May cash out anytime</p>
                     </div>
                 </div>
             </div>
@@ -147,11 +163,13 @@
             </div>
 
             <div class="flex flex-wrap items-center gap-2">
-                <div class="bg-slate-900 p-1 rounded-xl border border-slate-800 flex space-x-1">
+                <div class="bg-slate-900 p-1 rounded-xl border border-slate-800 flex flex-wrap gap-1">
                     <button onclick="setFilter('all')" id="filter-all" class="px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition-colors">All</button>
                     <button onclick="setFilter('rising')" id="filter-rising" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Rising</button>
                     <button onclick="setFilter('stable')" id="filter-stable" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Stable</button>
                     <button onclick="setFilter('dropping')" id="filter-dropping" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Dropping</button>
+                    <button onclick="setFilter('majority')" id="filter-majority" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Majority</button>
+                    <button onclick="setFilter('cashout')" id="filter-cashout" class="px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors">Cash Out</button>
                 </div>
 
                 <button id="add-hoard-btn" onclick="openHoardEditorModal()" class="hidden items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition-all">
@@ -183,64 +201,7 @@
         </div>
     </footer>
 
-    <!-- MODAL 1: VARIANT DETAILS BREAKDOWN -->
-    <div id="variant-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
-        <div class="glass-panel bg-slate-900 border border-slate-700/80 rounded-2xl w-full max-w-md overflow-hidden shadow-2xl transform scale-95 transition-transform duration-200" id="variant-modal-card">
-            <div class="p-5 border-b border-slate-800 flex items-center justify-between relative bg-slate-800/40">
-                <div class="flex items-center space-x-3">
-                    <img id="modal-pet-img" src="" alt="Pet Image" class="w-12 h-12 rounded-xl object-cover bg-slate-800 border border-slate-700">
-                    <div>
-                        <h3 id="modal-pet-name" class="text-lg font-bold text-white">Pet Name</h3>
-                        <p id="modal-hoarder-name" class="text-xs text-indigo-400 font-medium">Hoarded by Username</p>
-                    </div>
-                </div>
-                <button onclick="closeVariantModal()" class="text-slate-400 hover:text-white p-2 rounded-lg hover:bg-slate-800 transition-colors">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
-
-            <div class="p-6 space-y-5">
-                <div id="modal-trend-banner" class="flex items-center justify-between p-3 rounded-xl border text-xs font-semibold">
-                    <span class="flex items-center gap-2">
-                        <span id="modal-trend-icon" class="text-base">📈</span>
-                        <span id="modal-trend-text">Rising Trend</span>
-                    </span>
-                    <span id="modal-trend-desc" class="text-[11px] opacity-80">Hoarder is actively collecting</span>
-                </div>
-
-                <div class="space-y-2.5">
-                    <h4 class="text-xs font-bold text-slate-400 uppercase tracking-wider mb-2">Variant Breakdown</h4>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-slate-800/60 border border-slate-700/50">
-                        <span class="text-sm font-medium text-slate-200">Normal</span>
-                        <span id="modal-count-normal" class="text-base font-extrabold text-white">0</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-amber-950/20 border border-amber-500/30">
-                        <span class="text-sm font-semibold text-amber-300">Shiny</span>
-                        <span id="modal-count-shiny" class="text-base font-extrabold text-amber-200">0</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-purple-950/20 border border-purple-500/30">
-                        <span class="text-sm font-semibold text-purple-300">Mythic</span>
-                        <span id="modal-count-mythic" class="text-base font-extrabold text-purple-200">0</span>
-                    </div>
-                    <div class="flex items-center justify-between p-3 rounded-xl bg-cyan-950/30 border border-cyan-400/40">
-                        <span class="text-sm font-bold text-cyan-300">Shiny Mythic</span>
-                        <span id="modal-count-shinymythic" class="text-base font-black text-cyan-200">0</span>
-                    </div>
-                </div>
-
-                <div class="pt-3 border-t border-slate-800 flex items-center justify-between">
-                    <span class="text-sm font-bold text-slate-300">Grand Total Hoard</span>
-                    <span id="modal-count-total" class="text-xl font-black text-indigo-400">0</span>
-                </div>
-            </div>
-
-            <div class="p-4 bg-slate-800/40 border-t border-slate-800 text-right">
-                <button onclick="closeVariantModal()" class="px-5 py-2 bg-slate-800 hover:bg-slate-700 text-white rounded-xl text-sm font-medium transition-colors">Close</button>
-            </div>
-        </div>
-    </div>
-
-    <!-- MODAL 2: MODERATOR ADD / EDIT HOARD -->
+    <!-- MODAL: MODERATOR ADD / EDIT HOARD -->
     <div id="hoard-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/80 backdrop-blur-sm hidden opacity-0 transition-opacity duration-200">
         <div class="glass-panel bg-slate-900 border border-slate-700 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
             <div class="flex items-center justify-between pb-4 border-b border-slate-800 mb-4">
@@ -288,9 +249,11 @@
                 <div>
                     <label class="block text-xs font-semibold text-slate-300 mb-1">Trend Status</label>
                     <select id="input-trend" class="w-full px-3 py-2 bg-slate-950 border border-slate-800 rounded-xl text-sm text-white">
-                        <option value="rising">📈 Rising (Collecting More)</option>
-                        <option value="stable">⏸️ Stable / Paused</option>
-                        <option value="dropping">📉 Dropping (Cashing Out)</option>
+                        <option value="rising">📈 Rising (Actively collecting more)</option>
+                        <option value="stable">⏸️ Stable / Paused (Holding steady)</option>
+                        <option value="dropping">📉 Dropping (Cashing out)</option>
+                        <option value="majority">👑 Owns Majority of Circ</option>
+                        <option value="cashout">⚠️ Hoarding may cash out at any moment</option>
                     </select>
                 </div>
 
@@ -324,7 +287,6 @@
         let isUserMod = false;
         let currentFilter = 'all';
 
-        // 🛡️ STATIC BACKUP WHITELIST (Fallback ID)
         const ADMIN_DISCORD_IDS = [
             "1024720234357194814"
         ];
@@ -361,7 +323,6 @@
 
                 const discordId = meta.sub || (currentUser.identities && currentUser.identities[0] ? currentUser.identities[0].identity_data?.sub : null) || currentUser.id;
 
-                // 🛡️ Check static whitelist first, then verify server roles via edge function
                 let hasEditorRole = ADMIN_DISCORD_IDS.some(id => id.toString() === discordId.toString() || id.toString() === currentUser.id.toString());
 
                 if (!hasEditorRole) {
@@ -468,15 +429,24 @@
                 const total = getTotalCount(hoard.variants);
                 let trendBadgeHTML = '';
                 let borderGlowClass = '';
+
                 if (hoard.trend === 'rising') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1">📈 Rising</span>`;
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-emerald-500/10 text-emerald-400 border border-emerald-500/30 flex items-center gap-1.5"><img src="image_1b0cb2.png" class="w-3.5 h-3.5 object-contain"> Rising</span>`;
                     borderGlowClass = 'hover:border-emerald-500/40';
                 } else if (hoard.trend === 'stable') {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1">⏸️ Stable</span>`;
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-amber-500/10 text-amber-400 border border-amber-500/30 flex items-center gap-1.5"><img src="image_1b0d13.png" class="w-3.5 h-3.5 object-contain"> Stable</span>`;
                     borderGlowClass = 'hover:border-amber-500/40';
-                } else {
-                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1">📉 Dropping</span>`;
+                } else if (hoard.trend === 'dropping') {
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-rose-500/10 text-rose-400 border border-rose-500/30 flex items-center gap-1.5"><img src="image_1b0cd7.png" class="w-3.5 h-3.5 object-contain"> Dropping</span>`;
                     borderGlowClass = 'hover:border-rose-500/40';
+                } else if (hoard.trend === 'majority') {
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-indigo-500/10 text-indigo-300 border border-indigo-500/30 flex items-center gap-1.5"><img src="image_1b0d4c.png" class="w-3.5 h-3.5 object-contain"> Owns Majority</span>`;
+                    borderGlowClass = 'hover:border-indigo-500/40';
+                } else if (hoard.trend === 'cashout') {
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-purple-500/10 text-purple-300 border border-purple-500/30 flex items-center gap-1.5"><img src="image_1b0d8b.png" class="w-3.5 h-3.5 object-contain"> May Cash Out</span>`;
+                    borderGlowClass = 'hover:border-purple-500/40';
+                } else {
+                    trendBadgeHTML = `<span class="px-2.5 py-1 rounded-full text-xs font-semibold bg-slate-500/10 text-slate-400 border border-slate-500/30">Stable</span>`;
                 }
 
                 let modActionsHTML = '';
@@ -494,7 +464,7 @@
                 }
 
                 const cardHTML = `
-                    <div onclick="openVariantModal('${hoard.id}')" class="group relative glass-panel bg-slate-900/80 rounded-2xl border border-slate-800 ${borderGlowClass} p-5 cursor-pointer transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between">
+                    <div class="group relative glass-panel bg-slate-900/80 rounded-2xl border border-slate-800 ${borderGlowClass} p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between">
                         ${modActionsHTML}
                         <div>
                             <div class="flex items-start space-x-4 mb-4">
@@ -505,14 +475,31 @@
                                     <div class="mt-2">${trendBadgeHTML}</div>
                                 </div>
                             </div>
-                            <div class="bg-slate-950/60 rounded-xl p-3 border border-slate-800/80 flex items-center justify-between mb-4">
-                                <span class="text-xs font-semibold text-slate-400">Total Hoard Count</span>
-                                <span class="text-xl font-extrabold text-white">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
+
+                            <!-- INLINE VARIANT BREAKDOWN W/ CHECKMARKS -->
+                            <div class="space-y-2 mb-4">
+                                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-800/50 border border-slate-700/40">
+                                    <span class="text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> Normal</span>
+                                    <span class="font-bold text-white">${formatCount(hoard.variants.normal)}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-amber-950/20 border border-amber-500/20">
+                                    <span class="text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-400 text-xs"></i> Shiny</span>
+                                    <span class="font-bold text-amber-200">${formatCount(hoard.variants.shiny)}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-purple-950/20 border border-purple-500/20">
+                                    <span class="text-purple-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-purple-400 text-xs"></i> Mythic</span>
+                                    <span class="font-bold text-purple-200">${formatCount(hoard.variants.mythic)}</span>
+                                </div>
+                                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-cyan-950/30 border border-cyan-400/30">
+                                    <span class="text-cyan-300 font-semibold flex items-center gap-1.5"><i class="fa-solid fa-check text-cyan-400 text-xs"></i> Shiny Mythic</span>
+                                    <span class="font-black text-cyan-200">${formatCount(hoard.variants.shinyMythic)}</span>
+                                </div>
                             </div>
                         </div>
-                        <div class="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs text-slate-400 group-hover:text-slate-200">
-                            <span class="flex items-center gap-1.5"><i class="fa-solid fa-layer-group text-indigo-400"></i> View Variants</span>
-                            <i class="fa-solid fa-chevron-right text-xs transform group-hover:translate-x-1 transition-transform"></i>
+
+                        <div class="pt-3 border-t border-slate-800/80 flex items-center justify-between">
+                            <span class="text-xs font-semibold text-slate-400">Grand Total Hoard</span>
+                            <span class="text-base font-black text-indigo-400">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
                         </div>
                     </div>
                 `;
@@ -522,64 +509,17 @@
 
         function setFilter(filterType) {
             currentFilter = filterType;
-            ['all', 'rising', 'stable', 'dropping'].forEach(f => {
+            ['all', 'rising', 'stable', 'dropping', 'majority', 'cashout'].forEach(f => {
                 const btn = document.getElementById(`filter-${f}`);
-                if (f === filterType) {
-                    btn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition-colors';
-                } else {
-                    btn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors';
+                if (btn) {
+                    if (f === filterType) {
+                        btn.className = 'px-3 py-1.5 text-xs font-semibold rounded-lg bg-indigo-600 text-white transition-colors';
+                    } else {
+                        btn.className = 'px-3 py-1.5 text-xs font-medium rounded-lg text-slate-400 hover:text-white hover:bg-slate-800 transition-colors';
+                    }
                 }
             });
             renderHoards();
-        }
-
-        function openVariantModal(id) {
-            const hoard = hoards.find(h => h.id === id);
-            if (!hoard) return;
-
-            document.getElementById('modal-pet-img').src = hoard.image;
-            document.getElementById('modal-pet-name').innerText = hoard.petName;
-            document.getElementById('modal-hoarder-name').innerText = `Hoarded by @${hoard.hoarder}`;
-
-            const trendBanner = document.getElementById('modal-trend-banner');
-            const trendIcon = document.getElementById('modal-trend-icon');
-            const trendText = document.getElementById('modal-trend-text');
-            const trendDesc = document.getElementById('modal-trend-desc');
-
-            if (hoard.trend === 'rising') {
-                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-300 text-xs font-semibold';
-                trendIcon.innerText = '📈';
-                trendText.innerText = 'Rising Trend';
-                trendDesc.innerText = 'Hoarder is actively collecting';
-            } else if (hoard.trend === 'stable') {
-                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl border bg-amber-950/30 border-amber-500/30 text-amber-300 text-xs font-semibold';
-                trendIcon.innerText = '⏸️';
-                trendText.innerText = 'Stable / Paused';
-                trendDesc.innerText = 'Holding steady count';
-            } else {
-                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl border bg-rose-950/30 border-rose-500/30 text-rose-300 text-xs font-semibold';
-                trendIcon.innerText = '📉';
-                trendText.innerText = 'Dropping Trend';
-                trendDesc.innerText = 'Hoarder is cashing out';
-            }
-
-            document.getElementById('modal-count-normal').innerText = formatCount(hoard.variants.normal);
-            document.getElementById('modal-count-shiny').innerText = formatCount(hoard.variants.shiny);
-            document.getElementById('modal-count-mythic').innerText = formatCount(hoard.variants.mythic);
-            document.getElementById('modal-count-shinymythic').innerText = formatCount(hoard.variants.shinyMythic);
-            
-            const total = getTotalCount(hoard.variants);
-            document.getElementById('modal-count-total').innerText = total === 0 ? 'N/A' : total.toLocaleString();
-
-            const modal = document.getElementById('variant-modal');
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
-
-        function closeVariantModal() {
-            const modal = document.getElementById('variant-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 200);
         }
 
         let selectedFileToUpload = null;
@@ -708,14 +648,13 @@
                 await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image: imageUrl, trend, variants }]);
 
                 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
-                const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
                 
                 const discordPayload = {
                     content: "🚨 **New Pet Hoard Tracked!** 🚨",
                     embeds: [{
                         title: `${petName}`,
                         description: `Hoarded by **@${hoarder}**\n\n` +
-                                     `**Trend Status:** ${trendEmoji}\n\n` +
+                                     `**Trend Status:** ${trend}\n\n` +
                                      `**Variant Breakdown:**\n` +
                                      `• Normal: \`${formatCount(variants.normal)}\`\n` +
                                      `• Shiny: \`${formatCount(variants.shiny)}\`\n` +
