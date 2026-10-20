@@ -64,7 +64,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.3</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.4</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -386,7 +386,7 @@
                         hoarder: item.hoarder,
                         image: item.image,
                         trend: item.trend === 'majority' ? 'stable' : item.trend,
-                        isMajority: item.is_majority || item.isMajority || hoard.trend === 'majority' || false,
+                        isMajority: item.is_majority || item.isMajority || item.trend === 'majority' || false,
                         variants: item.variants || { normal: 0, shiny: 0, mythic: 0, shinyMythic: 0 }
                     }));
                 }
@@ -657,7 +657,6 @@
 
             const totalCount = getTotalCount(variants);
 
-            // Safe Database Payload (Compatible with existing tables)
             const payload = { 
                 pet_name: petName, 
                 hoarder, 
