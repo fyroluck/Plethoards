@@ -64,7 +64,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.9</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.10</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -125,7 +125,7 @@
                     </div>
                 </div>
                 <div class="flex items-center space-x-3 bg-indigo-950/30 p-3 rounded-xl border border-indigo-500/30">
-                    <span class="text-xl flex-shrink-0">⚡</span>
+                    <img src="trendunstable.png" alt="Unstable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⚡', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
                         <div class="font-semibold text-indigo-400 text-xs">Unstable</div>
                         <p class="text-[11px] text-slate-300">Volatile fluctuation</p>
@@ -437,10 +437,12 @@
         }
 
         function getVariantTrendIconHTML(trend) {
-            if (trend === 'rising') return `<img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
-            if (trend === 'dropping') return `<img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
-            if (trend === 'unstable') return `<span class="text-xs ml-1">⚡</span>`;
-            return `<img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
+            let imgName = 'trendstable.png';
+            if (trend === 'rising') imgName = 'trendrising.png';
+            if (trend === 'unstable') imgName = 'trendunstable.png';
+            if (trend === 'dropping') imgName = 'trenddropping.png';
+
+            return `<img src="${imgName}" alt="${trend}" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '${trend === 'unstable' ? '⚡' : '⏸️'}', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
         }
 
         function renderHoards() {
