@@ -84,7 +84,7 @@
                     <div class="text-left">
                         <div class="flex items-center space-x-1.5">
                             <span id="user-name" class="font-bold text-sm text-white">Username</span>
-                            <span id="mod-badge" class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded border border-amber-500/40 hidden">MOD</span>
+                            <span id="mod-badge" class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded border border-amber-500/40 hidden">EDITOR</span>
                         </div>
                         <p id="user-role-text" class="text-xs text-slate-400">Server Member</p>
                     </div>
@@ -324,7 +324,7 @@
         let isUserMod = false;
         let currentFilter = 'all';
 
-        // 🛡️ CORRECT MODERATOR WHITELIST:
+        // 🛡️ STATIC BACKUP WHITELIST (Fallback ID)
         const ADMIN_DISCORD_IDS = [
             "1024720234357194814"
         ];
@@ -361,11 +361,28 @@
 
                 const discordId = meta.sub || (currentUser.identities && currentUser.identities[0] ? currentUser.identities[0].identity_data?.sub : null) || currentUser.id;
 
-                isUserMod = ADMIN_DISCORD_IDS.some(id => id.toString() === discordId.toString() || id.toString() === currentUser.id.toString());
+                // 🛡️ Check static whitelist first, then verify server roles via edge function
+                let hasEditorRole = ADMIN_DISCORD_IDS.some(id => id.toString() === discordId.toString() || id.toString() === currentUser.id.toString());
+
+                if (!hasEditorRole) {
+                    try {
+                        const roleCheckRes = await fetch(`${SUPABASE_URL}/functions/v1/check-role`, {
+                            method: 'POST',
+                            headers: { 'Content-Type': 'application/json' },
+                            body: JSON.stringify({ discordId })
+                        });
+                        const roleData = await roleCheckRes.json();
+                        hasEditorRole = roleData.isEditor === true;
+                    } catch (err) {
+                        console.error("Role check error:", err);
+                    }
+                }
+
+                isUserMod = hasEditorRole;
 
                 document.getElementById('user-name').innerText = name;
                 document.getElementById('user-avatar').src = avatar;
-                document.getElementById('user-role-text').innerText = isUserMod ? 'Verified Moderator' : 'Community Member';
+                document.getElementById('user-role-text').innerText = isUserMod ? 'Verified List Editor' : 'Community Member';
                 
                 if (isUserMod) {
                     document.getElementById('mod-badge').classList.remove('hidden');
@@ -530,14 +547,20 @@
             const trendDesc = document.getElementById('modal-trend-desc');
 
             if (hoard.trend === 'rising') {
-                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl bg-emerald-950/40 border border-emerald-500/30 text-emerald-300 text-xs font-semibold';
-                trendIcon.innerText = '📈'; trendText.innerText = 'Rising Trend'; trendDesc.innerText = 'Hoarder is actively collecting more';
+                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl border bg-emerald-950/30 border-emerald-500/30 text-emerald-300 text-xs font-semibold';
+                trendIcon.innerText = '📈';
+                trendText.innerText = 'Rising Trend';
+                trendDesc.innerText = 'Hoarder is actively collecting';
             } else if (hoard.trend === 'stable') {
-                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl bg-amber-950/40 border border-amber-500/30 text-amber-300 text-xs font-semibold';
-                trendIcon.innerText = '⏸️'; trendText.innerText = 'Stable / Paused'; trendDesc.innerText = 'Not collecting more';
+                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl border bg-amber-950/30 border-amber-500/30 text-amber-300 text-xs font-semibold';
+                trendIcon.innerText = '⏸️';
+                trendText.innerText = 'Stable / Paused';
+                trendDesc.innerText = 'Holding steady count';
             } else {
-                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl bg-rose-950/40 border border-rose-500/30 text-rose-300 text-xs font-semibold';
-                trendIcon.innerText = '📉'; trendText.innerText = 'Dropping Trend'; trendDesc.innerText = 'Hoarder is cashing out';
+                trendBanner.className = 'flex items-center justify-between p-3 rounded-xl border bg-rose-950/30 border-rose-500/30 text-rose-300 text-xs font-semibold';
+                trendIcon.innerText = '📉';
+                trendText.innerText = 'Dropping Trend';
+                trendDesc.innerText = 'Hoarder is cashing out';
             }
 
             document.getElementById('modal-count-normal').innerText = formatCount(hoard.variants.normal);
@@ -549,22 +572,19 @@
             document.getElementById('modal-count-total').innerText = total === 0 ? 'N/A' : total.toLocaleString();
 
             const modal = document.getElementById('variant-modal');
-            const card = document.getElementById('variant-modal-card');
             modal.classList.remove('hidden');
-            setTimeout(() => { modal.classList.remove('opacity-0'); card.classList.remove('scale-95'); }, 10);
+            setTimeout(() => modal.classList.remove('opacity-0'), 10);
         }
 
         function closeVariantModal() {
             const modal = document.getElementById('variant-modal');
-            const card = document.getElementById('variant-modal-card');
-            modal.classList.add('opacity-0'); card.classList.add('scale-95');
+            modal.classList.add('opacity-0');
             setTimeout(() => modal.classList.add('hidden'), 200);
         }
 
         let selectedFileToUpload = null;
-
-        function handleFileSelect(e) {
-            const file = e.target.files[0];
+        function handleFileSelect(event) {
+            const file = event.target.files[0];
             if (file) {
                 selectedFileToUpload = file;
                 const reader = new FileReader();
@@ -651,7 +671,6 @@
             let imageUrl = document.getElementById('input-image-url').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
             const trend = document.getElementById('input-trend').value;
 
-            // ☁️ Upload file to Supabase Storage bucket if a new file was chosen
             if (selectedFileToUpload) {
                 const fileExt = selectedFileToUpload.name.split('.').pop();
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
@@ -667,7 +686,6 @@
                     return;
                 }
 
-                // Get public URL from Supabase Storage
                 const { data: publicURLData } = supabaseClient.storage
                     .from('hoard-images')
                     .getPublicUrl(fileName);
@@ -689,9 +707,7 @@
             } else {
                 await supabaseClient.from('hoards').insert([{ pet_name: petName, hoarder, image: imageUrl, trend, variants }]);
 
-                // 🚀 DISCORD WEBHOOK INTEGRATION
                 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
-                
                 const trendEmoji = trend === 'rising' ? '📈 Rising' : trend === 'stable' ? '⏸️ Stable' : '📉 Dropping';
                 
                 const discordPayload = {
