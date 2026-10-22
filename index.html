@@ -81,9 +81,9 @@
                 <canvas id="flappyCanvas" width="320" height="480" class="rounded-xl border border-purple-800/60 bg-[#4ec0ca] shadow-inner cursor-pointer"></canvas>
                 
                 <!-- START OVERLAY -->
-                <div id="flappy-start-overlay" class="absolute inset-0 bg-black/40 rounded-xl flex flex-col items-center justify-center space-y-3">
+                <div id="flappy-start-overlay" class="absolute inset-0 bg-black/40 rounded-xl flex flex-col items-center justify-center space-y-3 pointer-events-none">
                     <div class="text-center space-y-1">
-                        <h3 class="text-xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)]">READY?</h3>
+                        <h3 class="text-2xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] animate-pulse">GET READY</h3>
                         <p class="text-xs text-yellow-300 font-bold drop-shadow">Press Space or Click to Flap</p>
                     </div>
                 </div>
@@ -95,7 +95,7 @@
                         <p class="text-xs text-slate-300 uppercase font-semibold">Score: <span id="final-score" class="text-yellow-400 font-bold">0</span></p>
                         <p class="text-xs text-slate-300 uppercase font-semibold">Best: <span id="high-score" class="text-emerald-400 font-bold">0</span></p>
                     </div>
-                    <button onclick="resetFlappyGame()" class="px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg transition-transform hover:scale-105 uppercase tracking-wider">
+                    <button onclick="event.stopPropagation(); resetFlappyGame()" class="px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg transition-transform hover:scale-105 uppercase tracking-wider">
                         Play Again
                     </button>
                 </div>
@@ -128,7 +128,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.16</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.17</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -476,7 +476,7 @@
             }
         }
 
-        // 🎮 AUTHENTIC CLASSIC FLAPPY BIRD ENGINE
+        // 🎮 FLAWLESS CLASSIC FLAPPY BIRD ENGINE
         function handleLogoClick() {
             logoClicks++;
             if (logoClicks >= 5) {
@@ -489,13 +489,12 @@
         let birdImage = new Image();
         birdImage.src = 'Untitled Project (3).jpg';
 
-        // ACCURATE CLASSIC PHYSICS (Gravity, Jump, Max Velocity, Angle Rotation)
         let bird = { 
             x: 60, 
             y: 200, 
             radius: 16, 
-            gravity: 0.30, 
-            lift: -6.0, 
+            gravity: 0.28, 
+            lift: -5.5, 
             velocity: 0, 
             rotation: 0,
             maxVelocity: 8
@@ -541,7 +540,7 @@
             }
 
             bird.velocity = bird.lift;
-            bird.rotation = -25 * Math.PI / 180; // Instant upward tilt
+            bird.rotation = -25 * Math.PI / 180;
         }
 
         function resetFlappyGame() {
@@ -565,7 +564,6 @@
             const pipeWidth = 52;
             const capHeight = 24;
 
-            // Pipe Body (Classic Arcade Green)
             let grad = ctx.createLinearGradient(x, 0, x + pipeWidth, 0);
             grad.addColorStop(0, '#558022');
             grad.addColorStop(0.2, '#73be2e');
@@ -576,18 +574,16 @@
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 2.5;
 
-            // Top Pipe Body & Rim
+            // Top Pipe
             ctx.fillRect(x + 2, 0, pipeWidth - 4, top - capHeight);
             ctx.strokeRect(x + 2, -5, pipeWidth - 4, top - capHeight + 5);
-
             ctx.fillRect(x, top - capHeight, pipeWidth, capHeight);
             ctx.strokeRect(x, top - capHeight, pipeWidth, capHeight);
 
-            // Bottom Pipe Body & Rim
+            // Bottom Pipe
             let bottomY = canvas.height - bottom;
             ctx.fillRect(x + 2, bottomY + capHeight, pipeWidth - 4, bottom - capHeight);
             ctx.strokeRect(x + 2, bottomY + capHeight, pipeWidth - 4, bottom - capHeight + 5);
-
             ctx.fillRect(x, bottomY, pipeWidth, capHeight);
             ctx.strokeRect(x, bottomY, pipeWidth, capHeight);
         }
@@ -597,7 +593,7 @@
             ctx.fillStyle = '#4ec0ca';
             ctx.fillRect(0, 0, canvas.width, canvas.height);
 
-            // Ground Cityscape Base
+            // Ground Base
             ctx.fillStyle = '#ded895';
             ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
             ctx.fillStyle = '#73bf2e';
@@ -606,21 +602,24 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(-5, canvas.height - 40, canvas.width + 10, 45);
 
-            if (gameStarted && !isGameOver) {
-                // Physics Update
+            if (!gameStarted) {
+                // Smooth Bobbing Animation on Start Screen (Zero Gravity Drop)
+                bird.y = 200 + Math.sin(Date.now() / 150) * 6;
+                bird.velocity = 0;
+                bird.rotation = 0;
+            } else if (!isGameOver) {
+                // Crisp Arcade Physics
                 bird.velocity += bird.gravity;
                 if (bird.velocity > bird.maxVelocity) bird.velocity = bird.maxVelocity;
                 bird.y += bird.velocity;
 
-                // Rotational Physics (Nosedive when falling)
                 if (bird.velocity > 1) {
                     bird.rotation += 4 * Math.PI / 180;
                     if (bird.rotation > 70 * Math.PI / 180) bird.rotation = 70 * Math.PI / 180;
                 }
 
-                // Pipe Spawning
-                if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 180) {
-                    let gap = 115; // Crisp arcade gap
+                if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 200) {
+                    let gap = 125; 
                     let topHeight = Math.floor(Math.random() * (canvas.height - gap - 140)) + 50;
                     pipes.push({
                         x: canvas.width,
@@ -631,15 +630,15 @@
                 }
             }
 
-            // Draw Pipes & Process Collisions
+            // Draw Pipes & Check Collisions
             for (let i = pipes.length - 1; i >= 0; i--) {
                 let p = pipes[i];
                 if (gameStarted && !isGameOver) p.x -= 2.2;
 
                 drawClassicPipe(p.x, p.top, p.bottom);
 
-                // Accurate Circle-to-Box Collision
                 if (
+                    gameStarted &&
                     bird.x + bird.radius > p.x &&
                     bird.x - bird.radius < p.x + 52 &&
                     (bird.y - bird.radius < p.top || bird.y + bird.radius > canvas.height - p.bottom)
@@ -647,7 +646,6 @@
                     triggerGameOver();
                 }
 
-                // Score Pass
                 if (!p.passed && p.x + 52 < bird.x - bird.radius) {
                     p.passed = true;
                     score++;
@@ -656,12 +654,11 @@
                 if (p.x < -60) pipes.splice(i, 1);
             }
 
-            // Ground & Sky Bounds
-            if (bird.y + bird.radius >= canvas.height - 40 || bird.y - bird.radius <= 0) {
+            if (gameStarted && (bird.y + bird.radius >= canvas.height - 40 || bird.y - bird.radius <= 0)) {
                 triggerGameOver();
             }
 
-            // Render Bird with Rotation & Rounded Clipping
+            // Render Bird
             ctx.save();
             ctx.translate(bird.x, bird.y);
             ctx.rotate(bird.rotation);
@@ -677,7 +674,7 @@
             ctx.strokeRect(-bird.radius, -bird.radius, bird.radius * 2, bird.radius * 2);
             ctx.restore();
 
-            // Retro Arcade Big Score Text
+            // Score Counter
             ctx.fillStyle = '#ffffff';
             ctx.strokeStyle = '#000000';
             ctx.lineWidth = 4;
