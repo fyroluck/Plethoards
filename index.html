@@ -478,7 +478,8 @@
         let birdImage = new Image();
         birdImage.src = 'Untitled Project (3).jpg';
 
-        let bird = { x: 50, y: 150, width: 32, height: 32, gravity: 0.35, lift: -6.5, velocity: 0 };
+        // BALANCED GAME PHYSICS: LOWER GRAVITY & SMOOTHER JUMP
+        let bird = { x: 50, y: 150, width: 32, height: 32, gravity: 0.22, lift: -5.2, velocity: 0 };
         let pipes = [];
         let score = 0;
         let gameAnimationId;
@@ -545,9 +546,9 @@
             ctx.lineWidth = 2;
             ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
 
-            // Spawn Pipes
-            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 150) {
-                let gap = 120;
+            // WIDER HORIZONTAL PIPE SPACING (220px)
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 220) {
+                let gap = 140; // WIDER VERTICAL GAP BETWEEN PIPES
                 let topHeight = Math.floor(Math.random() * (canvas.height - gap - 80)) + 30;
                 pipes.push({
                     x: canvas.width,
