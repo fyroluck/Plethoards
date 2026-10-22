@@ -65,7 +65,7 @@
             box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
         }
 
-        /* MikeShi42 Flappy Game Specific Canvas & Elements Styling */
+        /* Flappy Game Canvas Container */
         #FlappyCanvasContainer {
             position: relative;
             width: 320px;
@@ -121,9 +121,16 @@
             <button onclick="closeFlappyGame()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-30">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
-            <div class="flex items-center space-x-2">
-                <i class="fa-solid fa-gamepad text-yellow-400 text-xl"></i>
-                <h2 class="text-lg font-bold text-white uppercase tracking-wider">Flappy PletHoards Classic</h2>
+            
+            <div class="flex items-center justify-between w-full pr-8">
+                <div class="flex items-center space-x-2">
+                    <i class="fa-solid fa-gamepad text-yellow-400 text-xl"></i>
+                    <h2 class="text-lg font-bold text-white uppercase tracking-wider">Flappy PletHoards</h2>
+                </div>
+                <button onclick="openLeaderboard()" class="flex items-center space-x-1.5 px-3 py-1 bg-purple-600/80 hover:bg-purple-500 text-white rounded-lg text-xs font-bold transition-all shadow">
+                    <i class="fa-solid fa-trophy text-yellow-300"></i>
+                    <span>Scores</span>
+                </button>
             </div>
             
             <div class="relative flex justify-center">
@@ -133,15 +140,18 @@
                     </div>
 
                     <div id="InstructionBox" class="absolute inset-x-0 top-1/3 text-center text-white font-bold text-sm drop-shadow bg-black/30 py-2 select-none">
-                        Click / Space to Fly <br> Press 'P' to Pause
+                        Click / Space to Fly <br> Press Space to Reset
                     </div>
 
                     <div id="LostScoreScreen" class="absolute inset-x-8 top-1/4 bg-[#ded895] border-2 border-black rounded-2xl p-6 text-center text-slate-950 font-extrabold shadow-2xl z-50 hidden select-none space-y-2">
                         <div class="text-xl uppercase tracking-wider text-rose-600">Game Over</div>
                         <div class="text-sm">Score: <span id="FinalScore" class="text-black font-black text-lg">0</span></div>
                         <div class="text-sm">Best: <span id="BestScore" class="text-emerald-700 font-black text-lg">0</span></div>
-                        <div class="pt-2">
-                            <button id="ResetButton" type="button" class="px-5 py-2 bg-yellow-400 hover:bg-yellow-300 text-slate-950 rounded-xl text-xs shadow font-black uppercase">Play Again</button>
+                        <div class="pt-2 flex justify-center space-x-2">
+                            <button id="ResetButton" type="button" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-slate-950 rounded-xl text-xs shadow font-black uppercase">Play Again</button>
+                            <button onclick="openLeaderboard()" type="button" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs shadow font-black uppercase flex items-center gap-1">
+                                <i class="fa-solid fa-trophy"></i> Ranks
+                            </button>
                         </div>
                     </div>
 
@@ -150,6 +160,34 @@
             </div>
 
             <p class="text-xs text-purple-300/60 text-center">Controls: <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Space</kbd> / <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Click</kbd> to jump!</p>
+        </div>
+    </div>
+
+    <!-- GLOBAL DISCORD LEADERBOARD MODAL -->
+    <div id="leaderboard-modal" class="fixed inset-0 z-50 bg-black/90 backdrop-blur-md flex flex-col items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-md w-full p-6 rounded-2xl border border-yellow-500/40 shadow-2xl flex flex-col relative space-y-4">
+            <button onclick="closeLeaderboard()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-30">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+
+            <div class="flex items-center space-x-3 pb-2 border-b border-purple-900/40">
+                <i class="fa-solid fa-trophy text-2xl text-yellow-400 animate-bounce"></i>
+                <div>
+                    <h2 class="text-lg font-black text-white uppercase tracking-wider">Flappy Champions</h2>
+                    <p class="text-xs text-purple-300/60">Live Discord Leaderboard</p>
+                </div>
+            </div>
+
+            <div id="leaderboard-list" class="space-y-2 max-h-72 overflow-y-auto custom-scrollbar pr-1">
+                <div class="text-center py-8 text-purple-300/50 text-xs">
+                    <i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i>
+                    <p>Loading leaderboard rankings...</p>
+                </div>
+            </div>
+
+            <div class="pt-2 border-t border-purple-900/30 text-center">
+                <p class="text-[11px] text-purple-300/60">Log in via Discord to submit your top score!</p>
+            </div>
         </div>
     </div>
 
@@ -170,19 +208,17 @@
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-30 glass-panel border-b border-purple-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Title & Interactive Logo Trigger -->
             <div class="flex items-center space-x-3">
                 <img id="site-logo" src="Untitled Project (3).jpg" onclick="handleLogoClick()" alt="PletHoards Logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40 cursor-pointer hover:scale-105 transition-transform select-none" title="Click me 5 times!">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.18</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.21</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
             </div>
 
-            <!-- Discord Auth Area -->
             <div id="auth-container">
                 <button id="discord-login-btn" onclick="loginWithDiscord()" class="flex items-center space-x-2 bg-discord hover:bg-discordHover text-white px-4 py-2.5 rounded-xl font-medium shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 text-sm">
                     <i class="fa-brands fa-discord text-xl"></i>
@@ -208,8 +244,7 @@
 
     <!-- MAIN CONTENT WRAPPER -->
     <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 flex-grow w-full space-y-8">
-
-        <!-- INTERACTIVE TREND KEY & FILTER HEADER -->
+        <!-- TREND FILTER HEADER -->
         <section class="glass-panel rounded-2xl p-5 border border-purple-900/30 shadow-2xl">
             <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3 border-b border-purple-900/30">
                 <div class="flex items-center space-x-2">
@@ -225,7 +260,6 @@
             </div>
             
             <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                <!-- Rising -->
                 <div id="key-rising" onclick="setTrendFilter('rising')" class="key-btn flex items-center space-x-3 bg-emerald-950/30 hover:bg-emerald-950/60 p-3 rounded-xl border border-emerald-500/30">
                     <img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
@@ -234,7 +268,6 @@
                     </div>
                 </div>
 
-                <!-- Stable -->
                 <div id="key-stable" onclick="setTrendFilter('stable')" class="key-btn flex items-center space-x-3 bg-amber-950/30 hover:bg-amber-950/60 p-3 rounded-xl border border-amber-500/30">
                     <img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
@@ -243,7 +276,6 @@
                     </div>
                 </div>
 
-                <!-- Unstable -->
                 <div id="key-unstable" onclick="setTrendFilter('unstable')" class="key-btn flex items-center space-x-3 bg-indigo-950/30 hover:bg-indigo-950/60 p-3 rounded-xl border border-indigo-500/30">
                     <img src="trendunstable.png" alt="Unstable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⚡', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
@@ -252,7 +284,6 @@
                     </div>
                 </div>
 
-                <!-- Dropping -->
                 <div id="key-dropping" onclick="setTrendFilter('dropping')" class="key-btn flex items-center space-x-3 bg-rose-950/30 hover:bg-rose-950/60 p-3 rounded-xl border border-rose-500/30">
                     <img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
                     <div>
@@ -352,11 +383,9 @@
                     </label>
                 </div>
 
-                <!-- PER-VARIANT QUANTITIES & TRENDS -->
                 <div class="pt-2 border-t border-purple-900/30 space-y-3">
                     <label class="block text-xs font-bold text-purple-300 uppercase tracking-wider">Variant Quantities & Trends</label>
                     
-                    <!-- Normal -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-slate-950/60 p-2.5 rounded-xl border border-purple-900/30 items-center">
                         <span class="text-xs font-semibold text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400"></i> Normal</span>
                         <input type="number" id="input-normal" min="0" value="0" required placeholder="Count" class="px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-sm text-white">
@@ -369,7 +398,6 @@
                         </select>
                     </div>
 
-                    <!-- Shiny -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-amber-950/15 p-2.5 rounded-xl border border-amber-500/20 items-center">
                         <span class="text-xs font-semibold text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-400"></i> Shiny</span>
                         <input type="number" id="input-shiny" min="0" value="0" required placeholder="Count" class="px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-sm text-white">
@@ -382,7 +410,6 @@
                         </select>
                     </div>
 
-                    <!-- Mythic -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-purple-950/15 p-2.5 rounded-xl border border-purple-500/20 items-center">
                         <span class="text-xs font-semibold text-purple-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-purple-400"></i> Mythic</span>
                         <input type="number" id="input-mythic" min="0" value="0" required placeholder="Count" class="px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-sm text-white">
@@ -395,7 +422,6 @@
                         </select>
                     </div>
 
-                    <!-- Shiny Mythic -->
                     <div class="grid grid-cols-1 sm:grid-cols-3 gap-2 bg-cyan-950/20 p-2.5 rounded-xl border border-cyan-400/30 items-center">
                         <span class="text-xs font-semibold text-cyan-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-cyan-400"></i> Shiny Mythic</span>
                         <input type="number" id="input-shinymythic" min="0" value="0" required placeholder="Count" class="px-3 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-sm text-white">
@@ -431,26 +457,18 @@
         let logoClicks = 0;
         let activeTrendFilter = 'all';
 
-        const ADMIN_DISCORD_IDS = [
-            "1024720234357194814"
-        ];
+        const ADMIN_DISCORD_IDS = ["1024720234357194814"];
         const BANNED_ROLE_ID = "1562190693634408598";
 
         async function loginWithDiscord() {
             await supabaseClient.auth.signInWithOAuth({
                 provider: 'discord',
-                options: {
-                    redirectTo: window.location.origin + window.location.pathname
-                }
+                options: { redirectTo: window.location.origin + window.location.pathname }
             });
         }
 
         async function logoutDiscord() {
-            try {
-                await supabaseClient.auth.signOut();
-            } catch (e) {
-                console.error("Signout error:", e);
-            }
+            try { await supabaseClient.auth.signOut(); } catch (e) {}
             localStorage.clear();
             sessionStorage.clear();
             currentUser = null;
@@ -465,7 +483,6 @@
                 const meta = currentUser.user_metadata || {};
                 const name = meta.full_name || meta.name || 'Discord User';
                 const avatar = meta.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
-
                 const discordId = meta.sub || (currentUser.identities && currentUser.identities[0] ? currentUser.identities[0].identity_data?.sub : null) || currentUser.id;
 
                 let hasEditorRole = ADMIN_DISCORD_IDS.some(id => id.toString() === discordId.toString() || id.toString() === currentUser.id.toString());
@@ -479,29 +496,20 @@
                     });
                     const roleData = await roleCheckRes.json();
                     hasEditorRole = hasEditorRole || (roleData.isEditor === true);
-                    
                     if (roleData.roles && Array.isArray(roleData.roles)) {
                         hasBannedRole = roleData.roles.includes(BANNED_ROLE_ID);
                     }
-                } catch (err) {
-                    console.error("Role check error:", err);
-                }
+                } catch (err) {}
 
-                if (hasBannedRole) {
-                    document.getElementById('banned-screen').classList.remove('hidden');
-                }
+                if (hasBannedRole) document.getElementById('banned-screen').classList.remove('hidden');
 
                 isUserMod = hasEditorRole;
-
                 document.getElementById('user-name').innerText = name;
                 document.getElementById('user-avatar').src = avatar;
                 document.getElementById('user-role-text').innerText = isUserMod ? 'Verified List Editor' : 'Community Member';
                 
-                if (isUserMod) {
-                    document.getElementById('mod-badge').classList.remove('hidden');
-                } else {
-                    document.getElementById('mod-badge').classList.add('hidden');
-                }
+                if (isUserMod) document.getElementById('mod-badge').classList.remove('hidden');
+                else document.getElementById('mod-badge').classList.add('hidden');
 
                 document.getElementById('discord-login-btn').classList.add('hidden');
                 document.getElementById('user-profile').classList.remove('hidden');
@@ -524,7 +532,81 @@
             }
         }
 
-        // 🎮 LOGO TRIGGER & MIKESHI42 FLAPPY GAME INTEGRATION
+        async function openLeaderboard() {
+            document.getElementById('leaderboard-modal').classList.remove('hidden');
+            await fetchLeaderboardScores();
+        }
+
+        function closeLeaderboard() {
+            document.getElementById('leaderboard-modal').classList.add('hidden');
+        }
+
+        async function fetchLeaderboardScores() {
+            const listEl = document.getElementById('leaderboard-list');
+            listEl.innerHTML = `<div class="text-center py-8 text-purple-300/50 text-xs"><i class="fa-solid fa-spinner fa-spin text-lg mb-2"></i><p>Fetching rankings...</p></div>`;
+
+            try {
+                const { data, error } = await supabaseClient
+                    .from('flappy_scores')
+                    .select('*')
+                    .order('score', { ascending: false })
+                    .limit(20);
+
+                if (error || !data || data.length === 0) {
+                    const localHigh = localStorage.getItem('plethoards_flappy_high') || 0;
+                    const meta = currentUser ? currentUser.user_metadata || {} : {};
+                    const name = meta.full_name || meta.name || 'You (Local)';
+                    const avatar = meta.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
+
+                    listEl.innerHTML = `
+                        <div class="flex items-center justify-between p-3 bg-slate-900/80 rounded-xl border border-yellow-500/40">
+                            <div class="flex items-center space-x-3">
+                                <span class="font-black text-yellow-400 text-sm">#1</span>
+                                <img src="${avatar}" class="w-8 h-8 rounded-full border border-purple-500/40 object-cover">
+                                <span class="font-bold text-white text-xs">${name}</span>
+                            </div>
+                            <span class="font-black text-yellow-400 text-sm">${localHigh} pts</span>
+                        </div>
+                    `;
+                    return;
+                }
+
+                listEl.innerHTML = '';
+                data.forEach((entry, idx) => {
+                    let rankBadge = `<span class="font-bold text-slate-400 text-xs">#${idx + 1}</span>`;
+                    if (idx === 0) rankBadge = `<span class="font-black text-yellow-400 text-sm">🥇 #1</span>`;
+                    if (idx === 1) rankBadge = `<span class="font-black text-slate-300 text-sm">🥈 #2</span>`;
+                    if (idx === 2) rankBadge = `<span class="font-black text-amber-600 text-sm">🥉 #3</span>`;
+
+                    const rowHTML = `
+                        <div class="flex items-center justify-between p-2.5 bg-slate-950/70 hover:bg-slate-900 rounded-xl border border-purple-900/30 transition-colors">
+                            <div class="flex items-center space-x-3 min-w-0">
+                                ${rankBadge}
+                                <img src="${entry.avatar_url || 'https://images.unsplash.com/photo-1535713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'}" class="w-8 h-8 rounded-full border border-purple-500/30 object-cover flex-shrink-0">
+                                <span class="font-semibold text-white text-xs truncate">${entry.username || 'Anonymous'}</span>
+                            </div>
+                            <span class="font-black text-yellow-300 text-xs flex-shrink-0 pl-2">${entry.score} pts</span>
+                        </div>
+                    `;
+                    listEl.insertAdjacentHTML('beforeend', rowHTML);
+                });
+            } catch (err) {}
+        }
+
+        async function saveScoreToLeaderboard(score) {
+            if (!currentUser || score <= 0) return;
+            const meta = currentUser.user_metadata || {};
+            const username = meta.full_name || meta.name || 'Discord User';
+            const avatar_url = meta.avatar_url || '';
+            const discord_id = meta.sub || currentUser.id;
+
+            try {
+                await supabaseClient.from('flappy_scores').upsert({
+                    discord_id, username, avatar_url, score
+                }, { onConflict: 'discord_id' });
+            } catch (e) {}
+        }
+
         function handleLogoClick() {
             logoClicks++;
             if (logoClicks >= 5) {
@@ -572,6 +654,8 @@
                 var finalBest = Math.max(CurrentScore, bestScore);
                 localStorage.setItem('plethoards_flappy_high', finalBest);
 
+                saveScoreToLeaderboard(finalBest);
+
                 Birdy.BirdyObject.stop().animate({top:'90%'}, 1000, 'linear');
                 $('#FinalScore').html(CurrentScore);
                 $('#BestScore').html(finalBest);
@@ -595,10 +679,9 @@
 
             $('#FlappyCanvasContainer').mousedown(function(event){
                 event.stopPropagation();
+                if(Lost) { resetGame(); return; }
                 Birdy.jump();
-                if($('#InstructionBox').is(':visible')) {
-                    $('#InstructionBox').fadeOut();
-                }
+                if($('#InstructionBox').is(':visible')) $('#InstructionBox').fadeOut();
             });
 
             $('#ResetButton').click(function(e){
@@ -608,12 +691,13 @@
 
             $('body').keydown(function(event){
                 if($('#flappy-modal').hasClass('hidden')) return;
-                if(event.which == 32){ // Space
+                if(event.which == 32){ // Spacebar
                     event.preventDefault();
+                    if(Lost) { resetGame(); return; }
                     Birdy.jump();
                     if($('#InstructionBox').is(':visible')) $('#InstructionBox').fadeOut();
                 }
-                if(event.which == 80){ // P
+                if(event.which == 80){ // 'P'
                     togglePause();
                 }
             });
@@ -766,10 +850,7 @@
         async function fetchHoardsFromCloud() {
             try {
                 const { data, error } = await supabaseClient.from('hoards').select('*');
-                if (error) {
-                    renderHoards();
-                    return;
-                }
+                if (error) { renderHoards(); return; }
                 if (data) {
                     hoards = data.map(item => ({
                         id: item.id.toString(),
@@ -835,7 +916,6 @@
                     const hasTrend = Object.values(hoard.variants).some(v => getVariantTrend(v) === activeTrendFilter && getVariantCount(v) > 0);
                     if (!hasTrend) return false;
                 }
-
                 return true;
             });
 
@@ -1002,7 +1082,6 @@
                 shinyMythic: { count: parseInt(document.getElementById('input-shinymythic').value) || 0, trend: document.getElementById('input-shinymythic-trend').value }
             };
 
-            const totalCount = getTotalCount(variants);
             let payload = { pet_name: petName, hoarder, image: imageUrl, is_majority: isMajority, variants };
 
             if (editId) {
