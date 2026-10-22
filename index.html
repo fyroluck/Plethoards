@@ -66,6 +66,34 @@
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
 
+    <!-- FLAPPY BIRD EASTER EGG MODAL -->
+    <div id="flappy-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 hidden">
+        <div class="glass-panel max-w-lg w-full p-6 rounded-2xl border border-purple-500/40 shadow-2xl flex flex-col items-center relative space-y-4">
+            <button onclick="closeFlappyGame()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+                <i class="fa-solid fa-xmark text-xl"></i>
+            </button>
+            <div class="flex items-center space-x-2">
+                <i class="fa-solid fa-gamepad text-yellow-400 text-xl"></i>
+                <h2 class="text-lg font-bold text-white uppercase tracking-wider">Flappy PletHoards</h2>
+            </div>
+            
+            <div class="relative w-full flex justify-center">
+                <canvas id="flappyCanvas" width="320" height="480" class="rounded-xl border border-purple-800/60 bg-[#0c0f1d] shadow-inner cursor-pointer"></canvas>
+                
+                <!-- GAME OVER OVERLAY -->
+                <div id="flappy-game-over" class="absolute inset-0 bg-black/75 rounded-xl flex flex-col items-center justify-center space-y-3 hidden">
+                    <h3 class="text-2xl font-black text-rose-500 animate-bounce">GAME OVER</h3>
+                    <p class="text-sm font-semibold text-slate-200">Score: <span id="final-score" class="text-yellow-400">0</span></p>
+                    <button onclick="resetFlappyGame()" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white font-bold rounded-xl text-xs shadow-lg transition-transform hover:scale-105">
+                        Play Again
+                    </button>
+                </div>
+            </div>
+
+            <p class="text-xs text-purple-300/60 text-center">Press <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Space</kbd> or <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Click</kbd> to jump!</p>
+        </div>
+    </div>
+
     <!-- BANNED LOLMAN SCREEN -->
     <div id="banned-screen" class="fixed inset-0 z-50 bg-[#080a14] flex flex-col items-center justify-center p-4 hidden">
         <div class="glass-panel max-w-md text-center p-8 rounded-2xl border border-rose-500/40 shadow-2xl space-y-4">
@@ -83,13 +111,13 @@
     <!-- HEADER / NAVIGATION -->
     <header class="sticky top-0 z-30 glass-panel border-b border-purple-900/30">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <!-- Brand Title -->
+            <!-- Brand Title & Interactive Logo Trigger -->
             <div class="flex items-center space-x-3">
-                <img src="Untitled Project (3).jpg" alt="PletHoards Logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40">
+                <img id="site-logo" src="Untitled Project (3).jpg" onclick="handleLogoClick()" alt="PletHoards Logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40 cursor-pointer hover:scale-105 transition-transform select-none" title="Click me 5 times!">
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.14</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.15</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -341,6 +369,7 @@
         let currentUser = null;
         let isUserMod = false;
         let lolmanClicks = 0;
+        let logoClicks = 0;
         let activeTrendFilter = 'all';
 
         const ADMIN_DISCORD_IDS = [
@@ -436,6 +465,156 @@
             }
         }
 
+        // 🎮 FLAPPY BIRD EASTER EGG ENGINE
+        function handleLogoClick() {
+            logoClicks++;
+            if (logoClicks >= 5) {
+                logoClicks = 0;
+                openFlappyGame();
+            }
+        }
+
+        let canvas, ctx;
+        let birdImage = new Image();
+        birdImage.src = 'Untitled Project (3).jpg';
+
+        let bird = { x: 50, y: 150, width: 32, height: 32, gravity: 0.35, lift: -6.5, velocity: 0 };
+        let pipes = [];
+        let score = 0;
+        let gameAnimationId;
+        let isGameOver = false;
+
+        function openFlappyGame() {
+            document.getElementById('flappy-modal').classList.remove('hidden');
+            canvas = document.getElementById('flappyCanvas');
+            ctx = canvas.getContext('2d');
+            
+            // Add Controls
+            window.addEventListener('keydown', flappyKeyHandler);
+            canvas.addEventListener('click', flappyJump);
+
+            resetFlappyGame();
+        }
+
+        function closeFlappyGame() {
+            document.getElementById('flappy-modal').classList.add('hidden');
+            cancelAnimationFrame(gameAnimationId);
+            window.removeEventListener('keydown', flappyKeyHandler);
+            canvas.removeEventListener('click', flappyJump);
+        }
+
+        function flappyKeyHandler(e) {
+            if (e.code === 'Space' || e.code === 'ArrowUp') {
+                e.preventDefault();
+                flappyJump();
+            }
+        }
+
+        function flappyJump() {
+            if (isGameOver) return;
+            bird.velocity = bird.lift;
+        }
+
+        function resetFlappyGame() {
+            bird.y = 150;
+            bird.velocity = 0;
+            pipes = [];
+            score = 0;
+            isGameOver = false;
+            document.getElementById('flappy-game-over').classList.add('hidden');
+            cancelAnimationFrame(gameAnimationId);
+            flappyLoop();
+        }
+
+        function flappyLoop() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Bird Physics
+            bird.velocity += bird.gravity;
+            bird.y += bird.velocity;
+
+            // Draw Custom Logo Bird
+            ctx.save();
+            ctx.beginPath();
+            ctx.arc(bird.x + bird.width / 2, bird.y + bird.height / 2, bird.width / 2, 0, Math.PI * 2);
+            ctx.clip();
+            ctx.drawImage(birdImage, bird.x, bird.y, bird.width, bird.height);
+            ctx.restore();
+            
+            ctx.strokeStyle = '#facc15';
+            ctx.lineWidth = 2;
+            ctx.strokeRect(bird.x, bird.y, bird.width, bird.height);
+
+            // Spawn Pipes
+            if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 150) {
+                let gap = 120;
+                let topHeight = Math.floor(Math.random() * (canvas.height - gap - 80)) + 30;
+                pipes.push({
+                    x: canvas.width,
+                    top: topHeight,
+                    bottom: canvas.height - topHeight - gap,
+                    passed: false
+                });
+            }
+
+            // Move & Draw Pipes
+            for (let i = pipes.length - 1; i >= 0; i--) {
+                let p = pipes[i];
+                p.x -= 2;
+
+                // Pipe Colors (PletHoards Theme)
+                ctx.fillStyle = '#1b2038';
+                ctx.strokeStyle = '#a855f7';
+                ctx.lineWidth = 2;
+
+                // Top Pipe
+                ctx.fillRect(p.x, 0, 48, p.top);
+                ctx.strokeRect(p.x, 0, 48, p.top);
+
+                // Bottom Pipe
+                ctx.fillRect(p.x, canvas.height - p.bottom, 48, p.bottom);
+                ctx.strokeRect(p.x, canvas.height - p.bottom, 48, p.bottom);
+
+                // Check Collisions
+                if (
+                    bird.x + bird.width > p.x &&
+                    bird.x < p.x + 48 &&
+                    (bird.y < p.top || bird.y + bird.height > canvas.height - p.bottom)
+                ) {
+                    triggerGameOver();
+                }
+
+                // Check Score Pass
+                if (!p.passed && p.x + 48 < bird.x) {
+                    p.passed = true;
+                    score++;
+                }
+
+                // Remove Offscreen Pipes
+                if (p.x < -50) pipes.splice(i, 1);
+            }
+
+            // Floor & Ceiling Boundaries
+            if (bird.y + bird.height >= canvas.height || bird.y <= 0) {
+                triggerGameOver();
+            }
+
+            // Draw Score Counter
+            ctx.fillStyle = '#ffffff';
+            ctx.font = 'bold 20px Inter';
+            ctx.fillText(`Score: ${score}`, 15, 30);
+
+            if (!isGameOver) {
+                gameAnimationId = requestAnimationFrame(flappyLoop);
+            }
+        }
+
+        function triggerGameOver() {
+            isGameOver = true;
+            document.getElementById('final-score').innerText = score;
+            document.getElementById('flappy-game-over').classList.remove('hidden');
+        }
+
         function setTrendFilter(trend) {
             activeTrendFilter = trend;
 
@@ -528,7 +707,6 @@
 
             grid.innerHTML = '';
 
-            // Filter logic
             let filtered = hoards.filter(hoard => {
                 const matchesSearch = hoard.petName.toLowerCase().includes(searchQuery) || hoard.hoarder.toLowerCase().includes(searchQuery);
                 if (!matchesSearch) return false;
@@ -812,7 +990,7 @@
                 content: actionHeader,
                 embeds: [{
                     title: `${petName}`,
-                    description: `Hoarded by **@${hoarder}**${majorityText}\n\n` +
+                    description: `Hoarded by **@${hoarder}** ${majorityText}\n\n` +
                                  `**Variant Breakdown & Trends:**\n` +
                                  `• Normal: \`${formatCount(variants.normal)}\` (${variants.normal.trend})\n` +
                                  `• Shiny: \`${formatCount(variants.shiny)}\` (${variants.shiny.trend})\n` +
