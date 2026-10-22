@@ -30,6 +30,8 @@
     <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
     <!-- Supabase JS Client Library -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <!-- jQuery -->
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
     <style>
         body {
             font-family: 'Inter', sans-serif;
@@ -62,6 +64,53 @@
             border-color: rgba(250, 204, 21, 0.8) !important;
             box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
         }
+
+        /* MikeShi42 Flappy Game Specific Canvas & Elements Styling */
+        #FlappyCanvasContainer {
+            position: relative;
+            width: 320px;
+            height: 480px;
+            background: #4ec0ca;
+            overflow: hidden;
+            border-radius: 1rem;
+            border: 1px solid rgba(168, 85, 247, 0.4);
+            cursor: pointer;
+        }
+        #Birdy {
+            width: 38px;
+            height: 38px;
+            background-image: url('Untitled Project (3).jpg');
+            background-size: cover;
+            background-position: center;
+            border-radius: 50%;
+            border: 2px solid #facc15;
+            position: absolute;
+            top: 50%;
+            left: 20%;
+            z-index: 150;
+        }
+        .Pipe {
+            position: absolute;
+            top: 0;
+            left: 100%;
+            width: 52px;
+            background: linear-gradient(90deg, #558022, #73be2e, #9de64e, #3b5816);
+            border: 2px solid #000;
+            animation: PipeMovement 6s linear;
+            -webkit-animation: PipeMovement 6s linear;
+        }
+        @keyframes PipeMovement {
+            from { left: 100%; }
+            to { left: -25%; }
+        }
+        @-webkit-keyframes PipeMovement {
+            from { left: 100%; }
+            to { left: -25%; }
+        }
+        .paused {
+            -webkit-animation-play-state: paused !important;
+            animation-play-state: paused !important;
+        }
     </style>
 </head>
 <body class="min-h-screen flex flex-col justify-between custom-scrollbar">
@@ -69,7 +118,7 @@
     <!-- FLAPPY BIRD EASTER EGG MODAL -->
     <div id="flappy-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 hidden">
         <div class="glass-panel max-w-lg w-full p-6 rounded-2xl border border-purple-500/40 shadow-2xl flex flex-col items-center relative space-y-4">
-            <button onclick="closeFlappyGame()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors">
+            <button onclick="closeFlappyGame()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-30">
                 <i class="fa-solid fa-xmark text-xl"></i>
             </button>
             <div class="flex items-center space-x-2">
@@ -77,27 +126,26 @@
                 <h2 class="text-lg font-bold text-white uppercase tracking-wider">Flappy PletHoards Classic</h2>
             </div>
             
-            <div class="relative w-full flex justify-center">
-                <canvas id="flappyCanvas" width="320" height="480" class="rounded-xl border border-purple-800/60 bg-[#4ec0ca] shadow-inner cursor-pointer"></canvas>
-                
-                <!-- START OVERLAY -->
-                <div id="flappy-start-overlay" class="absolute inset-0 bg-black/40 rounded-xl flex flex-col items-center justify-center space-y-3 pointer-events-none">
-                    <div class="text-center space-y-1">
-                        <h3 class="text-2xl font-black text-white drop-shadow-[0_2px_4px_rgba(0,0,0,0.8)] animate-pulse">GET READY</h3>
-                        <p class="text-xs text-yellow-300 font-bold drop-shadow">Press Space or Click to Flap</p>
+            <div class="relative flex justify-center">
+                <div id="FlappyCanvasContainer">
+                    <div id="CurrentScoreCard" class="absolute top-4 left-0 right-0 text-center font-black text-4xl text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] z-50 select-none">
+                        <span id="CurrentScore">0</span>
                     </div>
-                </div>
 
-                <!-- GAME OVER OVERLAY -->
-                <div id="flappy-game-over" class="absolute inset-0 bg-black/75 rounded-xl flex flex-col items-center justify-center space-y-3 hidden">
-                    <h3 class="text-2xl font-black text-rose-500 animate-bounce tracking-wide">GAME OVER</h3>
-                    <div class="bg-slate-900/90 p-4 rounded-xl border border-purple-500/30 text-center space-y-1 min-w-[160px]">
-                        <p class="text-xs text-slate-300 uppercase font-semibold">Score: <span id="final-score" class="text-yellow-400 font-bold">0</span></p>
-                        <p class="text-xs text-slate-300 uppercase font-semibold">Best: <span id="high-score" class="text-emerald-400 font-bold">0</span></p>
+                    <div id="InstructionBox" class="absolute inset-x-0 top-1/3 text-center text-white font-bold text-sm drop-shadow bg-black/30 py-2 select-none">
+                        Click / Space to Fly <br> Press 'P' to Pause
                     </div>
-                    <button onclick="event.stopPropagation(); resetFlappyGame()" class="px-6 py-2.5 bg-yellow-400 hover:bg-yellow-300 text-slate-950 font-extrabold rounded-xl text-xs shadow-lg transition-transform hover:scale-105 uppercase tracking-wider">
-                        Play Again
-                    </button>
+
+                    <div id="LostScoreScreen" class="absolute inset-x-8 top-1/4 bg-[#ded895] border-2 border-black rounded-2xl p-6 text-center text-slate-950 font-extrabold shadow-2xl z-50 hidden select-none space-y-2">
+                        <div class="text-xl uppercase tracking-wider text-rose-600">Game Over</div>
+                        <div class="text-sm">Score: <span id="FinalScore" class="text-black font-black text-lg">0</span></div>
+                        <div class="text-sm">Best: <span id="BestScore" class="text-emerald-700 font-black text-lg">0</span></div>
+                        <div class="pt-2">
+                            <button id="ResetButton" type="button" class="px-5 py-2 bg-yellow-400 hover:bg-yellow-300 text-slate-950 rounded-xl text-xs shadow font-black uppercase">Play Again</button>
+                        </div>
+                    </div>
+
+                    <div id="Birdy"></div>
                 </div>
             </div>
 
@@ -128,7 +176,7 @@
                 <div>
                     <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
                         PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.17</span>
+                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.18</span>
                     </h1>
                     <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
                 </div>
@@ -476,7 +524,7 @@
             }
         }
 
-        // 🎮 FLAWLESS CLASSIC FLAPPY BIRD ENGINE
+        // 🎮 LOGO TRIGGER & MIKESHI42 FLAPPY GAME INTEGRATION
         function handleLogoClick() {
             logoClicks++;
             if (logoClicks >= 5) {
@@ -485,236 +533,223 @@
             }
         }
 
-        let canvas, ctx;
-        let birdImage = new Image();
-        birdImage.src = 'Untitled Project (3).jpg';
-
-        let bird = { 
-            x: 60, 
-            y: 200, 
-            radius: 16, 
-            gravity: 0.28, 
-            lift: -5.5, 
-            velocity: 0, 
-            rotation: 0,
-            maxVelocity: 8
-        };
-        let pipes = [];
-        let score = 0;
-        let highScore = localStorage.getItem('plethoards_flappy_high') || 0;
-        let gameAnimationId;
-        let isGameOver = false;
-        let gameStarted = false;
+        let gameLoopIntervalID = 0;
+        let Paused = true;
+        let Lost = false;
+        let CurrentScore = 0;
 
         function openFlappyGame() {
             document.getElementById('flappy-modal').classList.remove('hidden');
-            canvas = document.getElementById('flappyCanvas');
-            ctx = canvas.getContext('2d');
-            
-            window.addEventListener('keydown', flappyKeyHandler);
-            canvas.addEventListener('click', flappyJump);
-
-            resetFlappyGame();
+            $('#InstructionBox').show();
+            resetGame();
         }
 
         function closeFlappyGame() {
             document.getElementById('flappy-modal').classList.add('hidden');
-            cancelAnimationFrame(gameAnimationId);
-            window.removeEventListener('keydown', flappyKeyHandler);
-            canvas.removeEventListener('click', flappyJump);
+            pauseGame();
         }
 
-        function flappyKeyHandler(e) {
-            if (e.code === 'Space' || e.code === 'ArrowUp') {
-                e.preventDefault();
-                flappyJump();
-            }
-        }
+        $(function(){
+            var canvasObject = $('#FlappyCanvasContainer');
 
-        function flappyJump() {
-            if (isGameOver) return;
-
-            if (!gameStarted) {
-                gameStarted = true;
-                document.getElementById('flappy-start-overlay').classList.add('hidden');
+            function pauseGame(){
+                clearInterval(gameLoopIntervalID);
+                $('.Pipe').addClass('paused');
+                Paused = true;
             }
 
-            bird.velocity = bird.lift;
-            bird.rotation = -25 * Math.PI / 180;
-        }
+            function startGame(){
+                if(Lost) return;
+                gameLoopIntervalID = setInterval(function(){ gameLoop(); }, 30);
+                $('.Pipe').removeClass('paused');
+                Paused = false;
+            }
 
-        function resetFlappyGame() {
-            bird.y = 200;
-            bird.velocity = 0;
-            bird.rotation = 0;
-            pipes = [];
-            score = 0;
-            isGameOver = false;
-            gameStarted = false;
+            function endGame(){
+                Lost = true;
+                pauseGame();
+                var bestScore = parseInt(localStorage.getItem('plethoards_flappy_high') || 0);
+                var finalBest = Math.max(CurrentScore, bestScore);
+                localStorage.setItem('plethoards_flappy_high', finalBest);
 
-            document.getElementById('flappy-start-overlay').classList.remove('hidden');
-            document.getElementById('flappy-game-over').classList.add('hidden');
-            document.getElementById('high-score').innerText = highScore;
+                Birdy.BirdyObject.stop().animate({top:'90%'}, 1000, 'linear');
+                $('#FinalScore').html(CurrentScore);
+                $('#BestScore').html(finalBest);
+                $('#LostScoreScreen').slideDown();
+            }
 
-            cancelAnimationFrame(gameAnimationId);
-            flappyLoop();
-        }
+            window.resetGame = function(){
+                pauseGame();
+                $('.Pipe').remove();
+                Lost = false;
+                CurrentScore = 0;
+                $('#CurrentScore').html(0);
+                Birdy.Reset();
+                startGame();
+                $('#LostScoreScreen').slideUp();
+            }
 
-        function drawClassicPipe(x, top, bottom) {
-            const pipeWidth = 52;
-            const capHeight = 24;
+            function togglePause(){
+                if(!Paused){ pauseGame(); } else { startGame(); }
+            }
 
-            let grad = ctx.createLinearGradient(x, 0, x + pipeWidth, 0);
-            grad.addColorStop(0, '#558022');
-            grad.addColorStop(0.2, '#73be2e');
-            grad.addColorStop(0.7, '#9de64e');
-            grad.addColorStop(1, '#3b5816');
+            $('#FlappyCanvasContainer').mousedown(function(event){
+                event.stopPropagation();
+                Birdy.jump();
+                if($('#InstructionBox').is(':visible')) {
+                    $('#InstructionBox').fadeOut();
+                }
+            });
 
-            ctx.fillStyle = grad;
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2.5;
+            $('#ResetButton').click(function(e){
+                e.stopPropagation();
+                resetGame();
+            });
 
-            // Top Pipe
-            ctx.fillRect(x + 2, 0, pipeWidth - 4, top - capHeight);
-            ctx.strokeRect(x + 2, -5, pipeWidth - 4, top - capHeight + 5);
-            ctx.fillRect(x, top - capHeight, pipeWidth, capHeight);
-            ctx.strokeRect(x, top - capHeight, pipeWidth, capHeight);
+            $('body').keydown(function(event){
+                if($('#flappy-modal').hasClass('hidden')) return;
+                if(event.which == 32){ // Space
+                    event.preventDefault();
+                    Birdy.jump();
+                    if($('#InstructionBox').is(':visible')) $('#InstructionBox').fadeOut();
+                }
+                if(event.which == 80){ // P
+                    togglePause();
+                }
+            });
 
-            // Bottom Pipe
-            let bottomY = canvas.height - bottom;
-            ctx.fillRect(x + 2, bottomY + capHeight, pipeWidth - 4, bottom - capHeight);
-            ctx.strokeRect(x + 2, bottomY + capHeight, pipeWidth - 4, bottom - capHeight + 5);
-            ctx.fillRect(x, bottomY, pipeWidth, capHeight);
-            ctx.strokeRect(x, bottomY, pipeWidth, capHeight);
-        }
+            var gameLoopCounter = 0;
+            function gameLoop(){
+                if(gameLoopCounter % 2 === 0){
+                    incrementScore();
+                    checkCollisions();
+                }
+                isInBound(Birdy.BirdyObject, canvasObject);
+                Birdy.fall();
 
-        function flappyLoop() {
-            // Sky Background
-            ctx.fillStyle = '#4ec0ca';
-            ctx.fillRect(0, 0, canvas.width, canvas.height);
+                if(gameLoopCounter % 80 === 0){
+                    addPipe();
+                    cleanPipes();
+                }
+                gameLoopCounter++;
+            }
 
-            // Ground Base
-            ctx.fillStyle = '#ded895';
-            ctx.fillRect(0, canvas.height - 40, canvas.width, 40);
-            ctx.fillStyle = '#73bf2e';
-            ctx.fillRect(0, canvas.height - 40, canvas.width, 10);
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-5, canvas.height - 40, canvas.width + 10, 45);
+            var Birdy = new (function(){
+                var selectorObject = $('#Birdy');
+                var jumping = false;
+                var gravVeloc = 0;
+                var gravAccel = 0.25;
+                var terminalVelocity = 6;
+                var Angle = 0;
 
-            if (!gameStarted) {
-                // Smooth Bobbing Animation on Start Screen (Zero Gravity Drop)
-                bird.y = 200 + Math.sin(Date.now() / 150) * 6;
-                bird.velocity = 0;
-                bird.rotation = 0;
-            } else if (!isGameOver) {
-                // Crisp Arcade Physics
-                bird.velocity += bird.gravity;
-                if (bird.velocity > bird.maxVelocity) bird.velocity = bird.maxVelocity;
-                bird.y += bird.velocity;
-
-                if (bird.velocity > 1) {
-                    bird.rotation += 4 * Math.PI / 180;
-                    if (bird.rotation > 70 * Math.PI / 180) bird.rotation = 70 * Math.PI / 180;
+                this.Reset = function(){
+                    jumping = false;
+                    gravVeloc = 0;
+                    Angle = 0;
+                    selectorObject.stop().rotate(0).css('top','50%');
                 }
 
-                if (pipes.length === 0 || pipes[pipes.length - 1].x < canvas.width - 200) {
-                    let gap = 125; 
-                    let topHeight = Math.floor(Math.random() * (canvas.height - gap - 140)) + 50;
-                    pipes.push({
-                        x: canvas.width,
-                        top: topHeight,
-                        bottom: canvas.height - topHeight - gap,
-                        passed: false
+                this.fall = function(){
+                    if(!jumping){
+                        selectorObject.stop().animate({top:'+='+gravVeloc+'%'}, 30, 'linear');
+                        gravVeloc += gravAccel;
+                        if(gravVeloc > terminalVelocity) gravVeloc = terminalVelocity;
+                        var AdjustedAngle = Angle + 10 * (gravVeloc / terminalVelocity);
+                        adjustAngle(Math.min(AdjustedAngle, 85));
+                    } else {
+                        gravVeloc = 0;
+                    }
+                };
+
+                this.jump = function(){
+                    if(Paused) return;
+                    jumping = true;
+                    adjustAngle(-35);
+                    selectorObject.stop().animate({top:'-=8%'}, 80, 'linear', function(){
+                        jumping = false;
+                        Birdy.fall();
                     });
+                };
+
+                function adjustAngle(angle){
+                    selectorObject.rotate(angle);
+                    Angle = angle;
+                }
+                this.BirdyObject = selectorObject;
+            });
+
+            function addPipe(){
+                var PipeGap = 32, MinPipeHeight = 10;
+                var MaxTopPipeHeight = 100 - PipeGap - (2 * MinPipeHeight);
+                var TopPipeHeight = Math.random() * MaxTopPipeHeight + MinPipeHeight;
+                var BottomPipeTop = TopPipeHeight + PipeGap;
+                var BottomPipeHeight = 100 - BottomPipeTop;
+
+                $('<div/>').addClass('Pipe').css('height', TopPipeHeight + '%').data('scored', false).appendTo(canvasObject);
+                $('<div/>').addClass('Pipe BottomPipe').css({height: BottomPipeHeight + '%', top: BottomPipeTop + '%'}).data('scored', false).appendTo(canvasObject);
+            }
+
+            function cleanPipes(){
+                $('.Pipe').each(function(){
+                    if($(this).offset().left / $(this).parent().width() < -0.2){
+                        $(this).remove();
+                    }
+                });
+            }
+
+            function checkCollisions(){
+                $('.Pipe').each(function(){
+                    if(isIntersecting(Birdy.BirdyObject, $(this))){
+                        endGame();
+                    }
+                });
+            }
+
+            function isIntersecting(obj1, obj2){
+                var o1 = [obj1.offset().left, obj1.offset().top, obj1.offset().left + obj1.width(), obj1.offset().top + obj1.height()];
+                var o2 = [obj2.offset().left, obj2.offset().top, obj2.offset().left + obj2.width(), obj2.offset().top + obj2.height()];
+                return !(o1[3] < o2[1] || o1[1] > o2[3] || o1[0] > o2[2] || o1[2] < o2[0]);
+            }
+
+            function isInBound(birdy, canvas){
+                if(birdy.offset().top + birdy.height() > canvas.offset().top + canvas.height() || birdy.offset().top < canvas.offset().top){
+                    endGame();
                 }
             }
 
-            // Draw Pipes & Check Collisions
-            for (let i = pipes.length - 1; i >= 0; i--) {
-                let p = pipes[i];
-                if (gameStarted && !isGameOver) p.x -= 2.2;
-
-                drawClassicPipe(p.x, p.top, p.bottom);
-
-                if (
-                    gameStarted &&
-                    bird.x + bird.radius > p.x &&
-                    bird.x - bird.radius < p.x + 52 &&
-                    (bird.y - bird.radius < p.top || bird.y + bird.radius > canvas.height - p.bottom)
-                ) {
-                    triggerGameOver();
-                }
-
-                if (!p.passed && p.x + 52 < bird.x - bird.radius) {
-                    p.passed = true;
-                    score++;
-                }
-
-                if (p.x < -60) pipes.splice(i, 1);
+            function incrementScore(){
+                $('.BottomPipe').each(function(){
+                    var BirdyBeakXPos = Birdy.BirdyObject.offset().left + Birdy.BirdyObject.width();
+                    var PipeRightXPos = $(this).offset().left + $(this).width();
+                    if(!$(this).data('scored') && BirdyBeakXPos > PipeRightXPos){
+                        CurrentScore++;
+                        $(this).data('scored', true);
+                    }
+                });
+                $('#CurrentScore').html(CurrentScore);
             }
 
-            if (gameStarted && (bird.y + bird.radius >= canvas.height - 40 || bird.y - bird.radius <= 0)) {
-                triggerGameOver();
-            }
+            jQuery.fn.rotate = function(degrees){
+                return $(this).css({
+                    '-webkit-transform': 'rotate(' + degrees + 'deg)',
+                    '-moz-transform': 'rotate(' + degrees + 'deg)',
+                    '-ms-transform': 'rotate(' + degrees + 'deg)',
+                    'transform': 'rotate(' + degrees + 'deg)'
+                });
+            };
+        });
 
-            // Render Bird
-            ctx.save();
-            ctx.translate(bird.x, bird.y);
-            ctx.rotate(bird.rotation);
-
-            ctx.beginPath();
-            ctx.arc(0, 0, bird.radius, 0, Math.PI * 2);
-            ctx.closePath();
-            ctx.clip();
-            ctx.drawImage(birdImage, -bird.radius, -bird.radius, bird.radius * 2, bird.radius * 2);
-
-            ctx.strokeStyle = '#facc15';
-            ctx.lineWidth = 2;
-            ctx.strokeRect(-bird.radius, -bird.radius, bird.radius * 2, bird.radius * 2);
-            ctx.restore();
-
-            // Score Counter
-            ctx.fillStyle = '#ffffff';
-            ctx.strokeStyle = '#000000';
-            ctx.lineWidth = 4;
-            ctx.font = '900 36px Inter, sans-serif';
-            ctx.textAlign = 'center';
-            ctx.strokeText(`${score}`, canvas.width / 2, 60);
-            ctx.fillText(`${score}`, canvas.width / 2, 60);
-
-            if (!isGameOver) {
-                gameAnimationId = requestAnimationFrame(flappyLoop);
-            }
-        }
-
-        function triggerGameOver() {
-            if (isGameOver) return;
-            isGameOver = true;
-
-            if (score > highScore) {
-                highScore = score;
-                localStorage.setItem('plethoards_flappy_high', highScore);
-            }
-
-            document.getElementById('final-score').innerText = score;
-            document.getElementById('high-score').innerText = highScore;
-            document.getElementById('flappy-game-over').classList.remove('hidden');
-        }
-
+        // ================= HOARD TRACKER APP LOGIC =================
         function setTrendFilter(trend) {
             activeTrendFilter = trend;
-
             ['rising', 'stable', 'unstable', 'dropping'].forEach(t => {
                 const el = document.getElementById(`key-${t}`);
                 if (el) el.classList.remove('active');
             });
-
             if (trend !== 'all') {
                 const selectedEl = document.getElementById(`key-${trend}`);
                 if (selectedEl) selectedEl.classList.add('active');
             }
-
             renderHoards();
         }
 
@@ -732,7 +767,6 @@
             try {
                 const { data, error } = await supabaseClient.from('hoards').select('*');
                 if (error) {
-                    console.warn("Supabase table 'hoards' notice:", error.message);
                     renderHoards();
                     return;
                 }
@@ -753,7 +787,6 @@
                 }
                 renderHoards();
             } catch (err) {
-                console.error("Error fetching data:", err);
                 renderHoards();
             }
         }
@@ -806,7 +839,6 @@
                 return true;
             });
 
-            // STRICT ALPHABETICAL ORDER BY PET NAME (A-Z)
             filtered.sort((a, b) => a.petName.localeCompare(b.petName, undefined, { sensitivity: 'base' }));
 
             if (filtered.length === 0) {
@@ -817,32 +849,25 @@
 
             filtered.forEach(hoard => {
                 const total = getTotalCount(hoard.variants);
-
-                let majorityBadgeHTML = '';
-                if (hoard.isMajority) {
-                    majorityBadgeHTML = `
-                        <div class="relative group/tooltip absolute top-2 right-2 z-10">
-                            <img src="trendmajority.png" alt="Owns Majority" class="w-6 h-6 object-contain filter drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] cursor-pointer">
-                            <div class="absolute bottom-full left-0 mb-1 hidden group-hover/tooltip:block bg-slate-900 text-yellow-300 text-[10px] font-semibold py-1 px-2 rounded-md border border-purple-500/50 whitespace-nowrap shadow-xl z-30">
-                                Majority Circ
-                            </div>
+                let majorityBadgeHTML = hoard.isMajority ? `
+                    <div class="relative group/tooltip absolute top-2 right-2 z-10">
+                        <img src="trendmajority.png" alt="Owns Majority" class="w-6 h-6 object-contain filter drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] cursor-pointer">
+                        <div class="absolute bottom-full left-0 mb-1 hidden group-hover/tooltip:block bg-slate-900 text-yellow-300 text-[10px] font-semibold py-1 px-2 rounded-md border border-purple-500/50 whitespace-nowrap shadow-xl z-30">
+                            Majority Circ
                         </div>
-                    `;
-                }
+                    </div>
+                ` : '';
 
-                let modActionsHTML = '';
-                if (isUserMod) {
-                    modActionsHTML = `
-                        <div class="absolute top-3 right-3 flex items-center space-x-1.5 z-20">
-                            <button onclick="event.stopPropagation(); openHoardEditorModal('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-purple-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Edit Hoard">
-                                <i class="fa-solid fa-pen text-xs"></i>
-                            </button>
-                            <button onclick="event.stopPropagation(); deleteHoard('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-rose-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Delete Hoard">
-                                <i class="fa-solid fa-trash text-xs"></i>
-                            </button>
-                        </div>
-                    `;
-                }
+                let modActionsHTML = isUserMod ? `
+                    <div class="absolute top-3 right-3 flex items-center space-x-1.5 z-20">
+                        <button onclick="event.stopPropagation(); openHoardEditorModal('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-purple-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Edit Hoard">
+                            <i class="fa-solid fa-pen text-xs"></i>
+                        </button>
+                        <button onclick="event.stopPropagation(); deleteHoard('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-rose-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Delete Hoard">
+                            <i class="fa-solid fa-trash text-xs"></i>
+                        </button>
+                    </div>
+                ` : '';
 
                 const cardHTML = `
                     <div class="group relative glass-panel bg-[#101426] rounded-2xl border border-purple-900/30 hover:border-purple-500/40 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between">
@@ -858,40 +883,25 @@
                                     <p class="text-xs text-purple-400 font-medium truncate">@${hoard.hoarder}</p>
                                 </div>
                             </div>
-
-                            <!-- INLINE VARIANT BREAKDOWN W/ CHECKMARKS & CUSTOM TREND ICONS -->
                             <div class="space-y-2 mb-4">
                                 <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-950/60 border border-purple-900/30">
-                                    <span class="text-slate-300 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-check text-emerald-400 text-xs"></i> Normal
-                                        ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.normal))}
-                                    </span>
+                                    <span class="text-slate-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-emerald-400 text-xs"></i> Normal ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.normal))}</span>
                                     <span class="font-bold text-white">${formatCount(hoard.variants.normal)}</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-amber-950/20 border border-amber-500/20">
-                                    <span class="text-amber-300 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-check text-amber-400 text-xs"></i> Shiny
-                                        ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.shiny))}
-                                    </span>
+                                    <span class="text-amber-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-amber-400 text-xs"></i> Shiny ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.shiny))}</span>
                                     <span class="font-bold text-amber-200">${formatCount(hoard.variants.shiny)}</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-purple-950/20 border border-purple-500/20">
-                                    <span class="text-purple-300 flex items-center gap-1.5">
-                                        <i class="fa-solid fa-check text-purple-400 text-xs"></i> Mythic
-                                        ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.mythic))}
-                                    </span>
+                                    <span class="text-purple-300 flex items-center gap-1.5"><i class="fa-solid fa-check text-purple-400 text-xs"></i> Mythic ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.mythic))}</span>
                                     <span class="font-bold text-purple-200">${formatCount(hoard.variants.mythic)}</span>
                                 </div>
                                 <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-cyan-950/30 border border-cyan-400/30">
-                                    <span class="text-cyan-300 font-semibold flex items-center gap-1.5">
-                                        <i class="fa-solid fa-check text-cyan-400 text-xs"></i> Shiny Mythic
-                                        ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.shinyMythic))}
-                                    </span>
+                                    <span class="text-cyan-300 font-semibold flex items-center gap-1.5"><i class="fa-solid fa-check text-cyan-400 text-xs"></i> Shiny Mythic ${getVariantTrendIconHTML(getVariantTrend(hoard.variants.shinyMythic))}</span>
                                     <span class="font-black text-cyan-200">${formatCount(hoard.variants.shinyMythic)}</span>
                                 </div>
                             </div>
                         </div>
-
                         <div class="pt-3 border-t border-purple-900/30 flex items-center justify-between">
                             <span class="text-xs font-semibold text-purple-300/60">Grand Total Hoard</span>
                             <span class="text-base font-black text-white">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
@@ -918,28 +928,6 @@
             }
         }
 
-        const dropZone = document.getElementById('drop-zone');
-        ['dragenter', 'dragover'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.add('border-purple-500', 'bg-purple-950/20'); }, false);
-        });
-        ['dragleave', 'drop'].forEach(eventName => {
-            dropZone.addEventListener(eventName, (e) => { e.preventDefault(); dropZone.classList.remove('border-purple-500', 'bg-purple-950/20'); }, false);
-        });
-        dropZone.addEventListener('drop', (e) => {
-            const file = e.dataTransfer.files[0];
-            if (file) {
-                selectedFileToUpload = file;
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('preview-thumb').src = evt.target.result;
-                    document.getElementById('dropzone-prompt').classList.add('hidden');
-                    document.getElementById('dropzone-preview').classList.remove('hidden');
-                    document.getElementById('upload-status-text').innerText = "Ready to upload!";
-                }
-                reader.readAsDataURL(file);
-            }
-        });
-
         function openHoardEditorModal(id = null) {
             if (!isUserMod) { alert("Unauthorized"); return; }
             const modal = document.getElementById('hoard-editor-modal');
@@ -964,13 +952,10 @@
 
                 document.getElementById('input-normal').value = getVariantCount(hoard.variants.normal);
                 document.getElementById('input-normal-trend').value = getVariantTrend(hoard.variants.normal);
-
                 document.getElementById('input-shiny').value = getVariantCount(hoard.variants.shiny);
                 document.getElementById('input-shiny-trend').value = getVariantTrend(hoard.variants.shiny);
-
                 document.getElementById('input-mythic').value = getVariantCount(hoard.variants.mythic);
                 document.getElementById('input-mythic-trend').value = getVariantTrend(hoard.variants.mythic);
-
                 document.getElementById('input-shinymythic').value = getVariantCount(hoard.variants.shinyMythic);
                 document.getElementById('input-shinymythic-trend').value = getVariantTrend(hoard.variants.shinyMythic);
 
@@ -1004,22 +989,9 @@
             if (selectedFileToUpload) {
                 const fileExt = selectedFileToUpload.name.split('.').pop();
                 const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-                
-                document.getElementById('upload-status-text').innerText = "Uploading to cloud...";
-                
-                const { data: uploadData, error: uploadError } = await supabaseClient.storage
-                    .from('hoard-images')
-                    .upload(fileName, selectedFileToUpload);
-
-                if (uploadError) {
-                    alert("Image upload failed: " + uploadError.message);
-                    return;
-                }
-
-                const { data: publicURLData } = supabaseClient.storage
-                    .from('hoard-images')
-                    .getPublicUrl(fileName);
-
+                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('hoard-images').upload(fileName, selectedFileToUpload);
+                if (uploadError) { alert("Image upload failed: " + uploadError.message); return; }
+                const { data: publicURLData } = supabaseClient.storage.from('hoard-images').getPublicUrl(fileName);
                 imageUrl = publicURLData.publicUrl;
             }
 
@@ -1031,74 +1003,14 @@
             };
 
             const totalCount = getTotalCount(variants);
-
-            let payload = { 
-                pet_name: petName, 
-                hoarder, 
-                image: imageUrl, 
-                is_majority: isMajority,
-                variants 
-            };
+            let payload = { pet_name: petName, hoarder, image: imageUrl, is_majority: isMajority, variants };
 
             if (editId) {
                 let { error: updateError } = await supabaseClient.from('hoards').update(payload).eq('id', editId);
-                
-                if (updateError && updateError.message.includes('is_majority')) {
-                    delete payload.is_majority;
-                    const fallbackRes = await supabaseClient.from('hoards').update(payload).eq('id', editId);
-                    updateError = fallbackRes.error;
-                }
-
-                if (updateError) {
-                    alert("Failed to update hoard: " + updateError.message);
-                    return;
-                }
+                if (updateError) { alert("Failed to update hoard: " + updateError.message); return; }
             } else {
                 let { error: insertError } = await supabaseClient.from('hoards').insert([payload]);
-                
-                if (insertError && insertError.message.includes('is_majority')) {
-                    delete payload.is_majority;
-                    const fallbackRes = await supabaseClient.from('hoards').insert([payload]);
-                    insertError = fallbackRes.error;
-                }
-
-                if (insertError) {
-                    alert("Failed to add hoard: " + insertError.message);
-                    return;
-                }
-            }
-
-            // 📢 DISCORD WEBHOOK NOTIFICATION
-            const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
-            const actionHeader = editId ? "✏️ **Pet Hoard Updated!** ✏️" : "🚨 **New Pet Hoard Tracked!** 🚨";
-            const majorityText = isMajority ? "👑 *(Majority Circ)*" : "";
-
-            const discordPayload = {
-                content: actionHeader,
-                embeds: [{
-                    title: `${petName}`,
-                    description: `Hoarded by **@${hoarder}** ${majorityText}\n\n` +
-                                 `**Variant Breakdown & Trends:**\n` +
-                                 `• Normal: \`${formatCount(variants.normal)}\` (${variants.normal.trend})\n` +
-                                 `• Shiny: \`${formatCount(variants.shiny)}\` (${variants.shiny.trend})\n` +
-                                 `• Mythic: \`${formatCount(variants.mythic)}\` (${variants.mythic.trend})\n` +
-                                 `• Shiny Mythic: \`${formatCount(variants.shinyMythic)}\` (${variants.shinyMythic.trend})\n\n` +
-                                 `**Grand Total Count:** \`${totalCount === 0 ? 'N/A' : totalCount.toLocaleString()}\``,
-                    color: editId ? 16753920 : 11043063,
-                    thumbnail: { url: imageUrl },
-                    footer: { text: "PletHoards • Pet Hoard Tracker" },
-                    timestamp: new Date().toISOString()
-                }]
-            };
-
-            try {
-                await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(discordPayload)
-                });
-            } catch (err) {
-                console.error("Failed to send Discord webhook notification:", err);
+                if (insertError) { alert("Failed to add hoard: " + insertError.message); return; }
             }
 
             closeHoardEditorModal();
