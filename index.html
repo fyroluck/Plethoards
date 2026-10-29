@@ -1,771 +1,579 @@
 <!DOCTYPE html>
 <html lang="en" class="dark">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>PletHoards - Pet Hoard Tracker</title>
-    <!-- Tailwind CSS CDN -->
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script>
-        tailwind.config = {
-            darkMode: 'class',
-            theme: {
-                extend: {
-                    colors: {
-                        discord: '#5865F2',
-                        discordHover: '#4752C4',
-                        themeBg: '#080a14',
-                        cardBg: '#101426',
-                        cardBorder: '#1b2038',
-                        accentYellow: '#facc15',
-                        accentPurple: '#a855f7'
-                    }
-                }
-            }
-        }
-    </script>
-    <!-- Font Awesome Icons -->
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
-    <!-- Inter Font -->
-    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
-    <!-- Supabase JS Client Library -->
-    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
-    <!-- jQuery -->
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <style>
-        body {
-            font-family: 'Inter', sans-serif;
-            background-color: #080a14;
-            color: #f1f5f9;
-        }
-        .custom-scrollbar::-webkit-scrollbar {
-            width: 6px;
-        }
-        .custom-scrollbar::-webkit-scrollbar-track {
-            background: #080a14;
-        }
-        .custom-scrollbar::-webkit-scrollbar-thumb {
-            background: #1b2038;
-            border-radius: 4px;
-        }
-        .glass-panel {
-            background: rgba(16, 20, 38, 0.85);
-            backdrop-filter: blur(12px);
-            border: 1px solid rgba(168, 85, 247, 0.15);
-        }
-        .key-btn {
-            transition: all 0.2s ease-in-out;
-            cursor: pointer;
-        }
-        .key-btn:hover {
-            transform: translateY(-2px);
-        }
-        .key-btn.active {
-            border-color: rgba(250, 204, 21, 0.8) !important;
-            box-shadow: 0 0 15px rgba(250, 204, 21, 0.2);
-        }
-
-        /* Flappy Game Canvas Container */
-        #FlappyCanvasContainer {
-            position: relative;
-            width: 320px;
-            height: 480px;
-            background: #4ec0ca;
-            overflow: hidden;
-            border-radius: 1rem;
-            border: 1px solid rgba(168, 85, 247, 0.4);
-            cursor: pointer;
-        }
-        #Birdy {
-            width: 38px;
-            height: 38px;
-            background-image: url('Untitled Project (3).jpg');
-            background-size: cover;
-            background-position: center;
-            border-radius: 50%;
-            border: 2px solid #facc15;
-            position: absolute;
-            top: 50%;
-            left: 20%;
-            z-index: 150;
-        }
-        .Pipe {
-            position: absolute;
-            top: 0;
-            left: 100%;
-            width: 52px;
-            background: linear-gradient(90deg, #558022, #73be2e, #9de64e, #3b5816);
-            border: 2px solid #000;
-            animation: PipeMovement 6s linear;
-            -webkit-animation: PipeMovement 6s linear;
-        }
-        @keyframes PipeMovement {
-            from { left: 100%; }
-            to { left: -25%; }
-        }
-        @-webkit-keyframes PipeMovement {
-            from { left: 100%; }
-            to { left: -25%; }
-        }
-        .paused {
-            -webkit-animation-play-state: paused !important;
-            animation-play-state: paused !important;
-        }
-
-        /* Meme Side Ad Banners */
-        .ad-banner-container {
-            width: 160px;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-        }
-        .ad-banner-item {
-            display: block;
-            border-radius: 12px;
-            overflow: hidden;
-            border: 1px solid rgba(168, 85, 247, 0.2);
-            transition: transform 0.2s ease, border-color 0.2s ease;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.5);
-        }
-        .ad-banner-item:hover {
-            transform: scale(1.03);
-            border-color: rgba(250, 204, 21, 0.6);
-        }
-        .ad-banner-item img {
-            width: 100%;
-            height: auto;
-            object-fit: cover;
-            display: block;
-        }
-    </style>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>PletHoards - Pet Hoard Tracker</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<script>
+tailwind.config = { darkMode: 'class', theme: { extend: { colors: { discord: '#5865F2', discordHover: '#4752C4' } } } }
+</script>
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700;800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+body { font-family: 'Inter', sans-serif; background: #080a14; color: #f1f5f9; }
+.custom-scrollbar::-webkit-scrollbar { width: 6px; }
+.custom-scrollbar::-webkit-scrollbar-track { background: #080a14; }
+.custom-scrollbar::-webkit-scrollbar-thumb { background: #1b2038; border-radius: 4px; }
+.glass-panel { background: rgba(16,20,38,.85); backdrop-filter: blur(12px); border: 1px solid rgba(168,85,247,.15); }
+.key-btn { transition: all .2s; cursor: pointer; }
+.key-btn:hover { transform: translateY(-2px); }
+.key-btn.active { border-color: rgba(250,204,21,.8) !important; box-shadow: 0 0 15px rgba(250,204,21,.2); }
+.num-input::-webkit-inner-spin-button { opacity: 1; }
+:focus-visible { outline: 2px solid #facc15; outline-offset: 2px; }
+@media (prefers-reduced-motion: reduce) { * { transition: none !important; } }
+</style>
 </head>
-<body class="min-h-screen flex flex-col justify-between custom-scrollbar">
+<body class="min-h-screen flex flex-col custom-scrollbar">
 
-    <!-- FLAPPY BIRD EASTER EGG MODAL -->
-    <div id="flappy-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md flex flex-col items-center justify-center p-4 hidden">
-        <div class="glass-panel max-w-lg w-full p-6 rounded-2xl border border-purple-500/40 shadow-2xl flex flex-col items-center relative space-y-4">
-            <button onclick="closeFlappyGame()" class="absolute top-4 right-4 text-slate-400 hover:text-white transition-colors z-30">
-                <i class="fa-solid fa-xmark text-xl"></i>
-            </button>
-            
-            <div class="flex items-center justify-between w-full pr-8">
-                <div class="flex items-center space-x-2">
-                    <i class="fa-solid fa-gamepad text-yellow-400 text-xl"></i>
-                    <h2 class="text-lg font-bold text-white uppercase tracking-wider">Flappy PletHoards</h2>
-                </div>
-                <button onclick="openLeaderboard()" class="flex items-center space-x-1.5 px-3 py-1 bg-purple-600/80 hover:bg-purple-500 text-white rounded-lg text-xs font-bold transition-all shadow">
-                    <i class="fa-solid fa-trophy text-yellow-300"></i>
-                    <span>Scores</span>
-                </button>
-            </div>
-            
-            <div class="relative flex justify-center">
-                <div id="FlappyCanvasContainer">
-                    <div id="CurrentScoreCard" class="absolute top-4 left-0 right-0 text-center font-black text-4xl text-white drop-shadow-[0_2px_2px_rgba(0,0,0,0.8)] z-50 select-none">
-                        <span id="CurrentScore">0</span>
-                    </div>
-
-                    <div id="InstructionBox" class="absolute inset-x-0 top-1/3 text-center text-white font-bold text-sm drop-shadow bg-black/30 py-2 select-none">
-                        Click / Space to Fly <br> Press Space to Reset
-                    </div>
-
-                    <div id="LostScoreScreen" class="absolute inset-x-8 top-1/4 bg-[#ded895] border-2 border-black rounded-2xl p-6 text-center text-slate-950 font-extrabold shadow-2xl z-50 hidden select-none space-y-2">
-                        <div class="text-xl uppercase tracking-wider text-rose-600">Game Over</div>
-                        <div class="text-sm">Score: <span id="FinalScore" class="text-black font-black text-lg">0</span></div>
-                        <div class="text-sm">Best: <span id="BestScore" class="text-emerald-700 font-black text-lg">0</span></div>
-                        <div class="pt-2 flex justify-center space-x-2">
-                            <button id="ResetButton" type="button" class="px-4 py-2 bg-yellow-400 hover:bg-yellow-300 text-slate-950 rounded-xl text-xs shadow font-black uppercase">Play Again</button>
-                            <button onclick="openLeaderboard()" type="button" class="px-4 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-xs shadow font-black uppercase flex items-center gap-1">
-                                <i class="fa-solid fa-trophy"></i> Ranks
-                            </button>
-                        </div>
-                    </div>
-
-                    <div id="Birdy"></div>
-                </div>
-            </div>
-
-            <p class="text-xs text-purple-300/60 text-center">Controls: <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Space</kbd> / <kbd class="px-1.5 py-0.5 bg-slate-800 border border-slate-700 rounded text-slate-200">Click</kbd> to jump!</p>
-        </div>
+<!-- HEADER -->
+<header class="sticky top-0 z-30 glass-panel border-b border-purple-900/30">
+  <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
+    <div class="flex items-center space-x-3">
+      <img id="site-logo" src="Untitled Project (3).jpg" alt="PletHoards logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40">
+      <div>
+        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">PletHoards
+          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.26</span>
+        </h1>
+        <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
+      </div>
     </div>
 
-    <!-- HEADER / NAVIGATION -->
-    <header class="sticky top-0 z-30 glass-panel border-b border-purple-900/30">
-        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-            <div class="flex items-center space-x-3">
-                <img id="site-logo" src="Untitled Project (3).jpg" alt="PletHoards Logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40">
-                <div>
-                    <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">
-                        PletHoards
-                        <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.25</span>
-                    </h1>
-                    <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
-                </div>
-            </div>
-
-            <div id="auth-container">
-                <button id="discord-login-btn" onclick="loginWithDiscord()" class="flex items-center space-x-2 bg-discord hover:bg-discordHover text-white px-4 py-2.5 rounded-xl font-medium shadow-lg transition-all duration-200 transform hover:-translate-y-0.5 text-sm">
-                    <i class="fa-brands fa-discord text-xl"></i>
-                    <span>Login with Discord</span>
-                </button>
-
-                <div id="user-profile" class="hidden flex items-center space-x-3 bg-slate-900/80 p-1.5 pr-4 rounded-xl border border-purple-900/40">
-                    <img id="user-avatar" src="" alt="Avatar" class="w-10 h-10 rounded-lg border border-purple-500/30 object-cover">
-                    <div class="text-left">
-                        <div class="flex items-center space-x-1.5">
-                            <span id="user-name" class="font-bold text-sm text-white">Username</span>
-                            <span id="mod-badge" class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded border border-amber-500/40 hidden">EDITOR</span>
-                        </div>
-                        <p id="user-role-text" class="text-xs text-purple-300/60">Server Member</p>
-                    </div>
-                    <button onclick="logoutDiscord()" class="ml-2 text-slate-400 hover:text-red-400 p-1.5 transition-colors" title="Logout">
-                        <i class="fa-solid fa-right-from-bracket"></i>
-                    </button>
-                </div>
-            </div>
+    <div id="auth-container">
+      <button id="discord-login-btn" onclick="loginWithDiscord()" class="flex items-center space-x-2 bg-discord hover:bg-discordHover text-white px-4 py-2.5 rounded-xl font-medium shadow-lg transition-all text-sm">
+        <i class="fa-brands fa-discord text-xl"></i><span>Log in with Discord</span>
+      </button>
+      <div id="user-profile" class="hidden items-center space-x-3 bg-slate-900/80 p-1.5 pr-4 rounded-xl border border-purple-900/40">
+        <img id="user-avatar" src="" alt="" class="w-10 h-10 rounded-lg border border-purple-500/30 object-cover">
+        <div class="text-left">
+          <div class="flex items-center space-x-1.5">
+            <span id="user-name" class="font-bold text-sm text-white">Username</span>
+            <span id="mod-badge" class="text-[10px] bg-amber-500/20 text-amber-300 font-semibold px-1.5 py-0.5 rounded border border-amber-500/40 hidden">Editor</span>
+          </div>
+          <p id="user-role-text" class="text-xs text-purple-300/60">Viewer</p>
         </div>
-    </header>
+        <button onclick="logoutDiscord()" class="ml-2 text-slate-400 hover:text-red-400 p-1.5 transition-colors" title="Log out" aria-label="Log out"><i class="fa-solid fa-right-from-bracket"></i></button>
+      </div>
+    </div>
+  </div>
+</header>
 
-    <!-- PAGE CONTAINER -->
-    <div class="max-w-[1600px] mx-auto px-4 py-8 flex items-start justify-center gap-6 w-full flex-grow">
-        <main class="max-w-7xl flex-grow w-full space-y-8 min-w-0">
-            <!-- TREND FILTER HEADER -->
-            <section class="glass-panel rounded-2xl p-5 border border-purple-900/30 shadow-2xl">
-                <div class="flex flex-col md:flex-row md:items-center justify-between gap-4 mb-4 pb-3 border-b border-purple-900/30">
-                    <div class="flex items-center space-x-2">
-                        <i class="fa-solid fa-filter text-yellow-400 text-sm"></i>
-                        <h2 class="text-sm font-bold uppercase tracking-wider text-purple-200">Filter By Trend Key</h2>
-                    </div>
-                    <div class="flex items-center space-x-2">
-                        <button id="reset-filter-btn" onclick="setTrendFilter('all')" class="text-xs font-semibold px-3 py-1 bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 rounded-lg border border-purple-800/40 transition-colors">
-                            Show All
-                        </button>
-                    </div>
-                </div>
-                
-                <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-3">
-                    <div id="key-rising" onclick="setTrendFilter('rising')" class="key-btn flex items-center space-x-3 bg-emerald-950/30 hover:bg-emerald-950/60 p-3 rounded-xl border border-emerald-500/30">
-                        <img src="trendrising.png" alt="Rising" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📈', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
-                        <div>
-                            <div class="font-semibold text-emerald-400 text-xs">Rising</div>
-                            <p class="text-[11px] text-slate-300">Actively collecting</p>
-                        </div>
-                    </div>
+<div class="max-w-[1600px] mx-auto px-4 py-8 w-full flex-grow">
+<main class="max-w-7xl mx-auto w-full space-y-6 min-w-0">
 
-                    <div id="key-stable" onclick="setTrendFilter('stable')" class="key-btn flex items-center space-x-3 bg-amber-950/30 hover:bg-amber-950/60 p-3 rounded-xl border border-amber-500/30">
-                        <img src="trendstable.png" alt="Stable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⏸️', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
-                        <div>
-                            <div class="font-semibold text-amber-400 text-xs">Stable</div>
-                            <p class="text-[11px] text-slate-300">Holding steady count</p>
-                        </div>
-                    </div>
+  <!-- TREND FILTER -->
+  <section class="glass-panel rounded-2xl p-5 shadow-2xl">
+    <div class="flex items-center justify-between gap-4 mb-4 pb-3 border-b border-purple-900/30">
+      <div class="flex items-center space-x-2">
+        <i class="fa-solid fa-filter text-yellow-400 text-sm"></i>
+        <h2 class="text-sm font-bold text-purple-200">Filter by trend</h2>
+      </div>
+      <button onclick="setTrendFilter('all')" class="text-xs font-semibold px-3 py-1 bg-purple-950/60 hover:bg-purple-900/80 text-purple-300 rounded-lg border border-purple-800/40">Show all</button>
+    </div>
+    <div id="trend-keys" class="grid grid-cols-2 lg:grid-cols-4 gap-3"></div>
+  </section>
 
-                    <div id="key-unstable" onclick="setTrendFilter('unstable')" class="key-btn flex items-center space-x-3 bg-indigo-950/30 hover:bg-indigo-950/60 p-3 rounded-xl border border-indigo-500/30">
-                        <img src="trendunstable.png" alt="Unstable" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '⚡', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
-                        <div>
-                            <div class="font-semibold text-indigo-400 text-xs">Unstable</div>
-                            <p class="text-[11px] text-slate-300">Hoarder may cash any moment</p>
-                        </div>
-                    </div>
+  <!-- CONTROLS -->
+  <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
+    <div class="relative flex-1 max-w-md">
+      <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60 text-sm"></i>
+      <input type="search" id="search-input" placeholder="Search pet or hoarder name..." class="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-purple-900/40 rounded-xl text-sm text-slate-100 placeholder-purple-300/40 focus:outline-none focus:ring-2 focus:ring-purple-500">
+    </div>
+    <div class="flex items-center justify-between sm:justify-end gap-4">
+      <span id="result-count" class="text-xs text-purple-300/60"></span>
+      <button id="add-hoard-btn" onclick="openHoardEditorModal()" class="hidden items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg">
+        <i class="fa-solid fa-plus"></i><span>Add hoard</span>
+      </button>
+    </div>
+  </section>
 
-                    <div id="key-dropping" onclick="setTrendFilter('dropping')" class="key-btn flex items-center space-x-3 bg-rose-950/30 hover:bg-rose-950/60 p-3 rounded-xl border border-rose-500/30">
-                        <img src="trenddropping.png" alt="Dropping" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '📉', className: 'text-xl flex-shrink-0'}))" class="w-7 h-7 rounded object-contain flex-shrink-0">
-                        <div>
-                            <div class="font-semibold text-rose-400 text-xs">Dropping</div>
-                            <p class="text-[11px] text-slate-300">Actively cashing out</p>
-                        </div>
-                    </div>
-                </div>
-            </section>
+  <!-- GRID -->
+  <section>
+    <div id="loading-state" class="text-center py-16 text-purple-300/60"><i class="fa-solid fa-spinner fa-spin text-2xl mb-3"></i><p class="text-sm">Loading hoards...</p></div>
+    <div id="hoards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
+    <div id="empty-state" class="hidden text-center py-16 glass-panel rounded-2xl">
+      <i class="fa-solid fa-ghost text-4xl text-purple-400/40 mb-3"></i>
+      <h3 class="text-lg font-bold text-slate-300">No hoards found</h3>
+      <p class="text-sm text-purple-300/50 mt-1">Clear the filter or try another name.</p>
+    </div>
+  </section>
+</main>
+</div>
 
-            <!-- CONTROLS BAR -->
-            <section class="flex flex-col sm:flex-row items-stretch sm:items-center justify-between gap-4">
-                <div class="relative flex-1 max-w-md">
-                    <i class="fa-solid fa-magnifying-glass absolute left-3.5 top-1/2 -translate-y-1/2 text-purple-400/60 text-sm"></i>
-                    <input type="text" id="search-input" oninput="renderHoards()" placeholder="Search pet or hoarder name..." class="w-full pl-10 pr-4 py-2.5 bg-slate-950/80 border border-purple-900/40 rounded-xl text-sm text-slate-100 placeholder-purple-300/40 focus:outline-none focus:ring-2 focus:ring-purple-500 focus:border-transparent transition-all">
-                </div>
+<!-- TOAST -->
+<div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] hidden px-4 py-2.5 rounded-xl text-sm font-semibold shadow-2xl border"></div>
 
-                <div class="flex items-center justify-end space-x-3">
-                    <button id="add-hoard-btn" onclick="openHoardEditorModal()" class="hidden items-center space-x-2 bg-emerald-600 hover:bg-emerald-500 text-white px-4 py-2.5 rounded-xl text-sm font-semibold shadow-lg transition-all">
-                        <i class="fa-solid fa-plus"></i>
-                        <span>Add New Hoard</span>
-                    </button>
-                </div>
-            </section>
-
-            <!-- HOARDS GRID CONTAINER -->
-            <section>
-                <div id="hoards-grid" class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4 gap-6"></div>
-                <div id="empty-state" class="hidden text-center py-16 glass-panel rounded-2xl border border-purple-900/30">
-                    <i class="fa-solid fa-ghost text-4xl text-purple-400/40 mb-3"></i>
-                    <h3 class="text-lg font-bold text-slate-300">No hoards found</h3>
-                    <p class="text-sm text-purple-300/50 mt-1">Try clearing filters or searching for another name.</p>
-                </div>
-            </section>
-        </main>
+<!-- EDITOR MODAL -->
+<div id="hoard-editor-modal" class="fixed inset-0 z-50 flex items-start sm:items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200 overflow-y-auto">
+  <div class="glass-panel bg-[#0d1021] border border-purple-800/40 rounded-2xl w-full max-w-2xl shadow-2xl p-6 my-auto">
+    <div class="flex items-center justify-between pb-4 border-b border-purple-900/30 mb-4">
+      <h3 id="editor-title" class="text-lg font-bold text-white flex items-center gap-2"></h3>
+      <button onclick="closeHoardEditorModal()" class="text-slate-400 hover:text-white p-1" aria-label="Close"><i class="fa-solid fa-xmark text-lg"></i></button>
     </div>
 
-    <!-- MODAL: EDITOR -->
-    <div id="hoard-editor-modal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/85 backdrop-blur-md hidden opacity-0 transition-opacity duration-200">
-        <div class="glass-panel bg-[#0d1021] border border-purple-800/40 rounded-2xl w-full max-w-lg overflow-hidden shadow-2xl p-6">
-            <div class="flex items-center justify-between pb-4 border-b border-purple-900/30 mb-4">
-                <h3 id="editor-title" class="text-lg font-bold text-white flex items-center gap-2">
-                    <i class="fa-solid fa-pen-to-square text-amber-400"></i>
-                    <span>Add New Hoard</span>
-                </h3>
-                <button onclick="closeHoardEditorModal()" class="text-slate-400 hover:text-white p-1">
-                    <i class="fa-solid fa-xmark text-lg"></i>
-                </button>
-            </div>
+    <form id="hoard-form" onsubmit="handleSaveHoard(event)" class="space-y-4">
+      <input type="hidden" id="edit-id">
+      <input type="hidden" id="input-image-url">
 
-            <form id="hoard-form" onsubmit="handleSaveHoard(event)" class="space-y-4">
-                <input type="hidden" id="edit-id" value="">
-                <input type="hidden" id="input-image-url" value="">
-
-                <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Pet Name</label>
-                        <input type="text" id="input-pet-name" required placeholder="e.g. Celestial Dragon" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    </div>
-                    <div>
-                        <label class="block text-xs font-semibold text-slate-300 mb-1">Hoarder Username</label>
-                        <input type="text" id="input-hoarder" required placeholder="e.g. ShadowCollector" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
-                    </div>
-                </div>
-
-                <div>
-                    <label class="block text-xs font-semibold text-slate-300 mb-1">Pet PNG Image</label>
-                    <div id="drop-zone" class="border-2 border-dashed border-purple-900/40 hover:border-purple-500 rounded-xl p-4 text-center cursor-pointer bg-slate-950 transition-colors relative flex flex-col items-center justify-center">
-                        <input type="file" id="image-file-input" accept="image/png, image/jpeg, image/webp" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
-                        <div id="dropzone-prompt" class="space-y-1">
-                            <i class="fa-solid fa-cloud-arrow-up text-2xl text-purple-400 mb-1"></i>
-                            <p class="text-xs font-medium text-slate-300">Drag & drop pet PNG here, or <span class="text-purple-400 underline">browse</span></p>
-                        </div>
-                        <div id="dropzone-preview" class="hidden flex items-center space-x-3">
-                            <img id="preview-thumb" src="" alt="Preview" class="w-12 h-12 rounded-lg object-cover border border-purple-800/40">
-                            <div class="text-left">
-                                <p class="text-xs font-bold text-emerald-400" id="upload-status-text">Image Loaded Successfully!</p>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                <div class="pt-2">
-                    <label class="flex items-center space-x-2 cursor-pointer bg-slate-950 p-2.5 rounded-xl border border-purple-900/40 w-full">
-                        <input type="checkbox" id="input-is-majority" class="w-4 h-4 text-purple-600 rounded bg-slate-900 border-purple-800 focus:ring-purple-500">
-                        <span class="text-xs font-bold text-slate-200">Owns Majority of Circulation</span>
-                    </label>
-                </div>
-
-                <div class="flex items-center justify-end space-x-3 pt-4 border-t border-purple-900/30">
-                    <button type="button" onclick="closeHoardEditorModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-sm font-medium transition-colors">Cancel</button>
-                    <button type="submit" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 text-white rounded-xl text-sm font-semibold transition-colors shadow-lg">Save Changes</button>
-                </div>
-            </form>
+      <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
+        <div>
+          <label for="input-pet-name" class="block text-xs font-semibold text-slate-300 mb-1">Pet name</label>
+          <input type="text" id="input-pet-name" required placeholder="e.g. Celestial Dragon" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
         </div>
-    </div>
+        <div>
+          <label for="input-hoarder" class="block text-xs font-semibold text-slate-300 mb-1">Hoarder username</label>
+          <input type="text" id="input-hoarder" required placeholder="e.g. ShadowCollector" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+        </div>
+      </div>
 
-    <!-- APP LOGIC SCRIPT -->
-    <script>
-        const SUPABASE_URL = 'https://hxparrmqbapehkmmbhee.supabase.co';
-        const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cGFycm1xYmFwZWhrbW1iaGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0Mzc4OTYsImV4cCI6MjEwODAxMzg5Nn0.xZsfgf0z14nUk4N0R3YTnO3Ka7wx-26o0vf3KJ9E1Jc';
-        const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY);
-        
-        var hoards = [];
-        var currentUser = null;
-        var isUserMod = false;
-        var activeTrendFilter = 'all';
-        const ADMIN_DISCORD_IDS = ['1024720234357194814'];
-        const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
+      <div>
+        <label class="block text-xs font-semibold text-slate-300 mb-1">Pet image</label>
+        <div class="border-2 border-dashed border-purple-900/40 hover:border-purple-500 rounded-xl p-3 text-center bg-slate-950 transition-colors relative flex items-center justify-center min-h-[64px]">
+          <input type="file" id="image-file-input" accept="image/png, image/jpeg, image/webp" class="absolute inset-0 opacity-0 cursor-pointer" onchange="handleFileSelect(event)">
+          <p id="dropzone-prompt" class="text-xs font-medium text-slate-300"><i class="fa-solid fa-cloud-arrow-up text-purple-400 mr-1"></i> Drop an image here, or <span class="text-purple-400 underline">browse</span></p>
+          <div id="dropzone-preview" class="hidden items-center space-x-3">
+            <img id="preview-thumb" src="" alt="Preview" class="w-12 h-12 rounded-lg object-cover border border-purple-800/40">
+            <p class="text-xs font-bold text-emerald-400" id="upload-status-text"></p>
+          </div>
+        </div>
+      </div>
 
-        async function loginWithDiscord() {
-            await supabaseClient.auth.signInWithOAuth({
-                provider: 'discord',
-                options: { redirectTo: window.location.origin + window.location.pathname }
-            });
-        }
+      <div>
+        <div class="flex items-center justify-between mb-2">
+          <label class="text-xs font-semibold text-slate-300">Variant counts & trends</label>
+          <span class="text-[11px] text-purple-300/60">Leave a count at 0 to show N/A</span>
+        </div>
+        <div id="variant-fields" class="grid grid-cols-1 md:grid-cols-2 gap-4"></div>
+      </div>
 
-        async function logoutDiscord() {
-            try { await supabaseClient.auth.signOut(); } catch (e) {}
-            localStorage.clear(); sessionStorage.clear(); window.location.reload();
-        }
+      <label class="flex items-center space-x-2 cursor-pointer bg-slate-950 p-2.5 rounded-xl border border-purple-900/40 w-full">
+        <input type="checkbox" id="input-is-majority" class="w-4 h-4 rounded bg-slate-900 border-purple-800">
+        <span class="text-xs font-bold text-slate-200">Owns majority of circulation</span>
+      </label>
 
-        // Toggle Normal <-> XL view per card
-        function toggleXlView(id) {
-            const box = document.getElementById(`variants-box-${id}`);
-            const btn = document.getElementById(`xl-toggle-btn-${id}`);
-            if (!box) return;
-            
-            if (box.dataset.mode === 'normal') {
-                box.dataset.mode = 'xl';
-                if(btn) btn.innerHTML = '<i class="fa-solid fa-arrow-left text-[10px]"></i>';
-                renderVariantsBox(id, 'xl');
-            } else {
-                box.dataset.mode = 'normal';
-                if(btn) btn.innerHTML = '<i class="fa-solid fa-arrow-right text-[10px]"></i>';
-                renderVariantsBox(id, 'normal');
-            }
-        }
+      <div class="flex items-center justify-end space-x-3 pt-4 border-t border-purple-900/30">
+        <button type="button" onclick="closeHoardEditorModal()" class="px-4 py-2 bg-slate-900 hover:bg-slate-800 text-slate-300 rounded-xl text-sm font-medium">Cancel</button>
+        <button type="submit" id="save-btn" class="px-5 py-2 bg-purple-600 hover:bg-purple-500 disabled:opacity-50 text-white rounded-xl text-sm font-semibold shadow-lg">Save changes</button>
+      </div>
+    </form>
+  </div>
+</div>
 
-        function hasXlVariants(variants) {
-            return variants && (
-                getVariantCount(variants.xlNormal) > 0 ||
-                getVariantCount(variants.xlShiny) > 0 ||
-                getVariantCount(variants.xlMythic) > 0 ||
-                getVariantCount(variants.xlShinyMythic) > 0
-            );
-        }
+<script>
+/* ---------- CONFIG ---------- */
+const SUPABASE_URL = 'https://hxparrmqbapehkmmbhee.supabase.co';
+const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cGFycm1xYmFwZWhrbW1iaGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0Mzc4OTYsImV4cCI6MjEwODAxMzg5Nn0.xZsfgf0z14nUk4N0R3YTnO3Ka7wx-26o0vf3KJ9E1Jc';
+const ADMIN_DISCORD_IDS = ['1024720234357194814'];
+// Replace with your NEW webhook (the old one was shared publicly - delete it in Discord).
+const DISCORD_WEBHOOK_URL = '';
 
-        function renderVariantsBox(id, mode) {
-            const hoard = hoards.find(h => h.id === id);
-            if (!hoard) return;
-            const box = document.getElementById(`variants-box-${id}`);
-            if (!box) return;
+const supabaseClient = window.supabase.createClient(SUPABASE_URL, SUPABASE_ANON_KEY, {
+  auth: { persistSession: true, autoRefreshToken: true, detectSessionInUrl: true }
+});
 
-            const v = hoard.variants || {};
-            const n = mode === 'xl' ? (v.xlNormal || {count:0, trend:'none'}) : (v.normal || {count:0, trend:'stable'});
-            const s = mode === 'xl' ? (v.xlShiny || {count:0, trend:'none'}) : (v.shiny || {count:0, trend:'stable'});
-            const m = mode === 'xl' ? (v.xlMythic || {count:0, trend:'none'}) : (v.mythic || {count:0, trend:'stable'});
-            const sm = mode === 'xl' ? (v.xlShinyMythic || {count:0, trend:'none'}) : (v.shinyMythic || {count:0, trend:'stable'});
+/* ---------- STATE ---------- */
+let hoards = [];
+let currentUser = null;
+let isUserMod = false;
+let activeTrendFilter = 'all';
+let selectedFileToUpload = null;
+const xlOpen = new Set(); // card ids currently showing XL
 
-            const hasXl = hasXlVariants(v);
+const TRENDS = {
+  rising:   { label: 'Rising',   sub: 'Actively collecting',          img: 'trendrising.png',   emoji: '📈', box: 'emerald' },
+  stable:   { label: 'Stable',   sub: 'Holding steady count',         img: 'trendstable.png',   emoji: '⏸️', box: 'amber' },
+  unstable: { label: 'Unstable', sub: 'Hoarder may cash any moment',  img: 'trendunstable.png', emoji: '⚡', box: 'indigo' },
+  dropping: { label: 'Dropping', sub: 'Actively cashing out',         img: 'trenddropping.png', emoji: '📉', box: 'rose' }
+};
+const NORMAL_KEYS = [['normal', 'Normal'], ['shiny', 'Shiny'], ['mythic', 'Mythic'], ['shinyMythic', 'Shiny Mythic']];
+const XL_KEYS = [['xlNormal', 'XL Normal'], ['xlShiny', 'XL Shiny'], ['xlMythic', 'XL Mythic'], ['xlShinyMythic', 'XL Shiny Mythic']];
+const ROW_STYLE = {
+  normal: 'bg-slate-950/60 border-purple-900/30 text-slate-300',
+  shiny: 'bg-amber-950/20 border-amber-500/20 text-amber-300',
+  mythic: 'bg-purple-950/20 border-purple-500/20 text-purple-300',
+  shinyMythic: 'bg-cyan-950/30 border-cyan-400/30 text-cyan-300 font-semibold'
+};
 
-            box.innerHTML = `
-                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-slate-950/60 border border-purple-900/30">
-                    <span class="text-slate-300 flex items-center gap-1.5">${mode === 'xl' ? 'XL Normal' : 'Normal'} ${getVariantTrendIconHTML(getVariantTrend(n))}</span>
-                    <div class="flex items-center gap-2">
-                        ${hasXl && mode === 'normal' ? `<button id="xl-toggle-btn-${id}" onclick="toggleXlView('${id}')" class="w-5 h-5 bg-purple-900/50 hover:bg-purple-600 text-purple-200 rounded flex items-center justify-center transition-colors" title="Show XL"><i class="fa-solid fa-arrow-right text-[10px]"></i></button>` : ''}
-                        ${hasXl && mode === 'xl' ? `<button id="xl-toggle-btn-${id}" onclick="toggleXlView('${id}')" class="w-5 h-5 bg-purple-900/50 hover:bg-purple-600 text-purple-200 rounded flex items-center justify-center transition-colors" title="Show Normal"><i class="fa-solid fa-arrow-left text-[10px]"></i></button>` : ''}
-                        <span id="normal-${id}" class="font-bold text-white">${formatCount(n)}</span>
-                    </div>
-                </div>
-                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-amber-950/20 border border-amber-500/20">
-                    <span class="text-amber-300 flex items-center gap-1.5">${mode === 'xl' ? 'XL Shiny' : 'Shiny'} ${getVariantTrendIconHTML(getVariantTrend(s))}</span>
-                    <span id="shiny-${id}" class="font-bold text-amber-200">${formatCount(s)}</span>
-                </div>
-                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-purple-950/20 border border-purple-500/20">
-                    <span class="text-purple-300 flex items-center gap-1.5">${mode === 'xl' ? 'XL Mythic' : 'Mythic'} ${getVariantTrendIconHTML(getVariantTrend(m))}</span>
-                    <span id="mythic-${id}" class="font-bold text-purple-200">${formatCount(m)}</span>
-                </div>
-                <div class="flex items-center justify-between text-xs p-2 rounded-lg bg-cyan-950/30 border border-cyan-400/30">
-                    <span class="text-cyan-300 font-semibold flex items-center gap-1.5">${mode === 'xl' ? 'XL Shiny Mythic' : 'Shiny Mythic'} ${getVariantTrendIconHTML(getVariantTrend(sm))}</span>
-                    <span id="shinymythic-${id}" class="font-black text-cyan-200">${formatCount(sm)}</span>
-                </div>
-            `;
-        }
+/* ---------- HELPERS ---------- */
+const esc = s => String(s ?? '').replace(/[&<>"']/g, c => ({ '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;', "'": '&#39;' }[c]));
+const getVariantCount = v => (v && typeof v === 'object') ? (parseInt(v.count) || 0) : (parseInt(v) || 0);
+const getVariantTrend = v => (v && typeof v === 'object' && v.trend) ? v.trend : 'stable';
+const formatCount = v => { const n = getVariantCount(v); return n === 0 ? 'N/A' : n.toLocaleString(); };
+const getTotalCount = vs => NORMAL_KEYS.reduce((t, [k]) => t + getVariantCount((vs || {})[k]), 0);
+const hasXlVariants = vs => XL_KEYS.some(([k]) => getVariantCount((vs || {})[k]) > 0);
 
-        function setTrendFilter(trend) {
-            activeTrendFilter = trend;
-            ['rising', 'stable', 'unstable', 'dropping'].forEach(t => {
-                const el = document.getElementById(`key-${t}`);
-                if (el) el.classList.remove('active');
-            });
-            if (trend !== 'all') {
-                const selectedEl = document.getElementById(`key-${trend}`);
-                if (selectedEl) selectedEl.classList.add('active');
-            }
-            renderHoards();
-        }
+function toast(msg, ok = true) {
+  const el = document.getElementById('toast');
+  el.textContent = msg;
+  el.className = 'fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] px-4 py-2.5 rounded-xl text-sm font-semibold shadow-2xl border ' +
+    (ok ? 'bg-emerald-950 border-emerald-500/50 text-emerald-200' : 'bg-rose-950 border-rose-500/50 text-rose-200');
+  clearTimeout(toast.t);
+  toast.t = setTimeout(() => el.classList.add('hidden'), 3500);
+}
 
-        function updateAuthUI() {
-            const addBtn = document.getElementById('add-hoard-btn');
-            if (isUserMod) {
-                addBtn.classList.remove('hidden');
-                addBtn.classList.add('flex');
-            } else {
-                addBtn.classList.add('hidden');
-            }
-        }
+// Icon files. If yours are named differently, change them here.
+const ICON_FILES = { rising: 'trendrising.png', stable: 'trendstable.png', unstable: 'trendunstable.png', dropping: 'trenddropping.png', majority: 'trendmajority.png' };
 
-        async function fetchHoardsFromCloud() {
-            try {
-                const { data, error } = await supabaseClient.from('hoards').select('*');
-                if (error) { renderHoards(); return; }
-                if (data) {
-                    hoards = data.map(item => ({
-                        id: item.id.toString(),
-                        petName: item.pet_name || item.petName,
-                        hoarder: item.hoarder,
-                        image: item.image,
-                        isMajority: item.is_majority || item.isMajority || false,
-                        variants: item.variants || { 
-                            normal: { count: 0, trend: 'stable' }, 
-                            shiny: { count: 0, trend: 'stable' }, 
-                            mythic: { count: 0, trend: 'stable' }, 
-                            shinyMythic: { count: 0, trend: 'stable' } 
-                        }
-                    }));
-                }
-                renderHoards();
-            } catch (err) {
-                renderHoards();
-            }
-        }
+// Tries the exact filename, then other common extensions, and only then falls back to the emoji.
+function iconFallback(img) {
+  const next = (img.dataset.alts || '').split(',').filter(Boolean);
+  if (next.length) { img.dataset.alts = next.slice(1).join(','); img.src = next[0]; return; }
+  const s = document.createElement('span');
+  s.textContent = img.dataset.emoji; s.className = img.dataset.ecls || 'text-xs'; s.title = img.title;
+  img.replaceWith(s);
+}
+function iconImg(file, alt, cls, emoji, ecls) {
+  const base = file.replace(/\.[^.]+$/, '');
+  const alts = ['png', 'PNG', 'webp', 'jpg', 'jpeg', 'gif', 'svg'].map(e => `${base}.${e}`).filter(f => f !== file).join(',');
+  return `<img src="${file}" alt="${esc(alt)}" title="${esc(alt)}" data-alts="${alts}" data-emoji="${emoji}" data-ecls="${ecls}" onerror="iconFallback(this)" class="${cls}">`;
+}
 
-        function getVariantCount(v) {
-            if (typeof v === 'object' && v !== null) return parseInt(v.count) || 0;
-            return parseInt(v) || 0;
-        }
+function trendIcon(trend) {
+  const t = TRENDS[trend];
+  if (!t) return '';
+  return iconImg(ICON_FILES[trend], t.label, 'w-4 h-4 object-contain inline-block ml-1', t.emoji, 'text-xs ml-1');
+}
 
-        function getVariantTrend(v) {
-            if (typeof v === 'object' && v !== null) return v.trend || 'stable';
-            return 'stable';
-        }
+/* ---------- AUTH (editor detection) ---------- */
+function getDiscordId(user) {
+  const ident = (user.identities || []).find(i => i.provider === 'discord');
+  const d = (ident && ident.identity_data) || {};
+  const m = user.user_metadata || {};
+  return String(d.provider_id || d.sub || (ident && ident.id) || m.provider_id || m.sub || '');
+}
 
-        function getTotalCount(variants) {
-            return getVariantCount(variants.normal) + getVariantCount(variants.shiny) + getVariantCount(variants.mythic) + getVariantCount(variants.shinyMythic);
-        }
+function applySession(session) {
+  currentUser = session ? session.user : null;
+  isUserMod = false;
+  const loginBtn = document.getElementById('discord-login-btn');
+  const profile = document.getElementById('user-profile');
 
-        function formatCount(val) {
-            const num = getVariantCount(val);
-            return num === 0 ? 'N/A' : num.toLocaleString();
-        }
+  if (!currentUser) {
+    loginBtn.classList.remove('hidden');
+    profile.classList.add('hidden'); profile.classList.remove('flex');
+  } else {
+    const m = currentUser.user_metadata || {};
+    isUserMod = ADMIN_DISCORD_IDS.includes(getDiscordId(currentUser));
+    loginBtn.classList.add('hidden');
+    profile.classList.remove('hidden'); profile.classList.add('flex');
+    document.getElementById('user-avatar').src = m.avatar_url || m.picture || 'https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
+    document.getElementById('user-name').textContent = m.full_name || m.name || currentUser.email || 'User';
+    document.getElementById('mod-badge').classList.toggle('hidden', !isUserMod);
+    document.getElementById('user-role-text').textContent = isUserMod ? 'Administrator / Editor' : 'Viewer';
+  }
+  const addBtn = document.getElementById('add-hoard-btn');
+  addBtn.classList.toggle('hidden', !isUserMod);
+  addBtn.classList.toggle('flex', isUserMod);
+  renderHoards(); // card edit/delete buttons depend on isUserMod
+}
 
-        function getVariantTrendIconHTML(trend) {
-            if (trend === 'none') return ''; 
-            let imgName = 'trendstable.png';
-            if (trend === 'rising') imgName = 'trendrising.png';
-            if (trend === 'unstable') imgName = 'trendunstable.png';
-            if (trend === 'dropping') imgName = 'trenddropping.png';
-            return `<img src="${imgName}" alt="${trend}" onerror="this.replaceWith(Object.assign(document.createElement('span'), {innerHTML: '${trend === 'unstable' ? '⚡' : '⏸️'}', className: 'text-xs'}))" class="w-4 h-4 object-contain inline-block ml-1">`;
-        }
+// Fires for INITIAL_SESSION, SIGNED_IN (incl. return from Discord), TOKEN_REFRESHED, SIGNED_OUT.
+// Avoids the old race where getSession() ran before the OAuth redirect was processed.
+supabaseClient.auth.onAuthStateChange((event, session) => {
+  setTimeout(() => {
+    applySession(session);
+    if (event === 'SIGNED_IN' && (location.hash.includes('access_token') || location.search.includes('code='))) {
+      history.replaceState({}, '', location.pathname);
+    }
+  }, 0);
+});
 
-        function renderHoards() {
-            const grid = document.getElementById('hoards-grid');
-            const emptyState = document.getElementById('empty-state');
-            const searchQuery = document.getElementById('search-input').value.toLowerCase().trim();
+async function loginWithDiscord() {
+  const { error } = await supabaseClient.auth.signInWithOAuth({
+    provider: 'discord',
+    options: { redirectTo: location.origin + location.pathname }
+  });
+  if (error) toast('Login failed: ' + error.message, false);
+}
 
-            grid.innerHTML = '';
+async function logoutDiscord() {
+  try { await supabaseClient.auth.signOut(); } catch (e) {}
+  applySession(null);
+}
 
-            let filtered = hoards.filter(hoard => {
-                const matchesSearch = hoard.petName.toLowerCase().includes(searchQuery) || hoard.hoarder.toLowerCase().includes(searchQuery);
-                if (!matchesSearch) return false;
+/* ---------- FILTERS ---------- */
+function buildTrendKeys() {
+  document.getElementById('trend-keys').innerHTML = Object.entries(TRENDS).map(([k, t]) => `
+    <button type="button" id="key-${k}" onclick="setTrendFilter('${k}')" class="key-btn flex items-center space-x-3 bg-${t.box}-950/30 hover:bg-${t.box}-950/60 p-3 rounded-xl border border-${t.box}-500/30 text-left">
+      ${iconImg(ICON_FILES[k], t.label, 'w-7 h-7 object-contain flex-shrink-0', t.emoji, 'text-xl flex-shrink-0')}
+      <div><div class="font-semibold text-${t.box}-400 text-xs">${t.label}</div><p class="text-[11px] text-slate-300">${t.sub}</p></div>
+    </button>`).join('');
+}
 
-                if (activeTrendFilter !== 'all') {
-                    const hasTrend = Object.values(hoard.variants).some(v => getVariantTrend(v) === activeTrendFilter && getVariantCount(v) > 0);
-                    if (!hasTrend) return false;
-                }
-                return true;
-            });
+function setTrendFilter(trend) {
+  // clicking the active filter again turns it off
+  activeTrendFilter = (trend === activeTrendFilter) ? 'all' : trend;
+  Object.keys(TRENDS).forEach(t => document.getElementById('key-' + t).classList.toggle('active', t === activeTrendFilter));
+  renderHoards();
+}
 
-            filtered.sort((a, b) => a.petName.localeCompare(b.petName, undefined, { sensitivity: 'base' }));
+/* ---------- DATA ---------- */
+async function fetchHoardsFromCloud() {
+  try {
+    const { data, error } = await supabaseClient.from('hoards').select('*');
+    if (error) { toast('Could not load hoards: ' + error.message, false); }
+    else {
+      hoards = (data || []).map(item => ({
+        id: String(item.id),
+        petName: item.pet_name || item.petName || 'Unnamed',
+        hoarder: item.hoarder || '',
+        image: item.image,
+        isMajority: item.is_majority || item.isMajority || false,
+        variants: item.variants || {}
+      }));
+    }
+  } catch (err) { toast('Network error while loading hoards', false); }
+  document.getElementById('loading-state').classList.add('hidden');
+  renderHoards();
+}
 
-            if (filtered.length === 0) {
-                emptyState.classList.remove('hidden');
-            } else {
-                emptyState.classList.add('hidden');
-            }
+/* ---------- CARD RENDERING ---------- */
+function renderVariantsBox(id) {
+  const hoard = hoards.find(h => h.id === id);
+  const box = document.getElementById('variants-box-' + id);
+  if (!hoard || !box) return;
+  const v = hoard.variants || {};
+  const xl = xlOpen.has(id) && hasXlVariants(v);
+  const keys = xl ? XL_KEYS : NORMAL_KEYS;
+  const toggle = hasXlVariants(v)
+    ? `<button type="button" onclick="toggleXlView('${id}')" class="w-5 h-5 bg-purple-900/50 hover:bg-purple-600 text-purple-200 rounded flex items-center justify-center" title="${xl ? 'Show normal' : 'Show XL'}" aria-label="${xl ? 'Show normal' : 'Show XL'}"><i class="fa-solid fa-arrow-${xl ? 'left' : 'right'} text-[10px]"></i></button>` : '';
 
-            filtered.forEach(hoard => {
-                const total = getTotalCount(hoard.variants);
-                const majorityBadgeHTML = hoard.isMajority ? `
-                    <div class="relative group/tooltip absolute top-2 right-2 z-10">
-                        <img src="trendmajority.png" alt="Owns Majority" class="w-6 h-6 object-contain filter drop-shadow-[0_0_8px_rgba(168,85,247,0.8)] cursor-pointer">
-                        <div class="absolute bottom-full left-0 mb-1 hidden group-hover/tooltip:block bg-slate-900 text-yellow-300 text-[10px] font-semibold py-1 px-2 rounded-md border border-purple-500/50 whitespace-nowrap shadow-xl z-30">
-                            Majority Circ
-                        </div>
-                    </div>
-                ` : '';
+  box.innerHTML = keys.map(([key, label], i) => {
+    const val = v[key] || { count: 0, trend: xl ? 'none' : 'stable' };
+    const style = ROW_STYLE[NORMAL_KEYS[i][0]];
+    return `<div class="flex items-center justify-between text-xs p-2 rounded-lg border ${style}">
+      <span class="flex items-center gap-1.5">${label} ${trendIcon(getVariantTrend(val))}</span>
+      <div class="flex items-center gap-2">${i === 0 ? toggle : ''}<span class="font-bold text-white">${formatCount(val)}</span></div>
+    </div>`;
+  }).join('');
+}
 
-                const modActionsHTML = isUserMod ? `
-                    <div class="absolute top-3 right-3 flex items-center space-x-1.5 z-20">
-                        <button onclick="event.stopPropagation(); openHoardEditorModal('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-purple-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Edit Hoard">
-                            <i class="fa-solid fa-pen text-xs"></i>
-                        </button>
-                        <button onclick="event.stopPropagation(); deleteHoard('${hoard.id}')" class="p-1.5 bg-slate-900/90 hover:bg-rose-600 text-slate-300 hover:text-white rounded-lg transition-colors border border-purple-900/40" title="Delete Hoard">
-                            <i class="fa-solid fa-trash text-xs"></i>
-                        </button>
-                    </div>
-                ` : '';
+function toggleXlView(id) {
+  xlOpen.has(id) ? xlOpen.delete(id) : xlOpen.add(id);
+  renderVariantsBox(id);
+}
 
-                const cardHTML = `
-                    <div class="group relative glass-panel bg-[#101426] rounded-2xl border border-purple-900/30 hover:border-purple-500/40 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl overflow-hidden flex flex-col justify-between">
-                        ${modActionsHTML}
-                        <div>
-                            <div class="flex items-start space-x-4 mb-4">
-                                <div class="relative flex-shrink-0">
-                                    <img src="${hoard.image}" alt="${hoard.petName}" class="w-16 h-16 rounded-xl object-cover border border-purple-800/40 group-hover:scale-105 transition-transform duration-300">
-                                    ${majorityBadgeHTML}
-                                </div>
-                                <div class="pr-12 min-w-0 flex-1">
-                                    <h3 class="font-bold text-base text-white group-hover:text-yellow-300 transition-colors truncate">${hoard.petName}</h3>
-                                    <p class="text-xs text-purple-400 font-medium truncate">@${hoard.hoarder}</p>
-                                </div>
-                            </div>
-                            <div id="variants-box-${hoard.id}" data-mode="normal" class="space-y-2 mb-4"></div>
-                        </div>
-                        <div class="pt-3 border-t border-purple-900/30 flex items-center justify-between">
-                            <span class="text-xs font-semibold text-purple-300/60">Grand Total Hoard</span>
-                            <span id="total-${hoard.id}" class="text-base font-black text-white">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
-                        </div>
-                    </div>
-                `;
-                grid.insertAdjacentHTML('beforeend', cardHTML);
-                renderVariantsBox(hoard.id, 'normal');
-            });
-        }
+function renderHoards() {
+  const grid = document.getElementById('hoards-grid');
+  const q = document.getElementById('search-input').value.toLowerCase().trim();
 
-        let selectedFileToUpload = null;
-        function handleFileSelect(event) {
-            const file = event.target.files[0];
-            if (file) {
-                selectedFileToUpload = file;
-                const reader = new FileReader();
-                reader.onload = function(evt) {
-                    document.getElementById('preview-thumb').src = evt.target.result;
-                    document.getElementById('dropzone-prompt').classList.add('hidden');
-                    document.getElementById('dropzone-preview').classList.remove('hidden');
-                    document.getElementById('upload-status-text').innerText = "Ready to upload!";
-                }
-                reader.readAsDataURL(file);
-            }
-        }
+  const filtered = hoards.filter(h => {
+    if (!(h.petName.toLowerCase().includes(q) || h.hoarder.toLowerCase().includes(q))) return false;
+    if (activeTrendFilter === 'all') return true;
+    return Object.values(h.variants || {}).some(v => getVariantTrend(v) === activeTrendFilter && getVariantCount(v) > 0);
+  }).sort((a, b) => a.petName.localeCompare(b.petName, undefined, { sensitivity: 'base' }));
 
-        function openHoardEditorModal(id = null) {
-            if (!isUserMod) { alert("Unauthorized"); return; }
-            const modal = document.getElementById('hoard-editor-modal');
-            const title = document.getElementById('editor-title');
-            document.getElementById('hoard-form').reset();
-            document.getElementById('edit-id').value = '';
-            document.getElementById('input-image-url').value = '';
-            document.getElementById('input-is-majority').checked = false;
-            selectedFileToUpload = null;
-            document.getElementById('dropzone-prompt').classList.remove('hidden');
-            document.getElementById('dropzone-preview').classList.add('hidden');
+  document.getElementById('empty-state').classList.toggle('hidden', filtered.length > 0 || !document.getElementById('loading-state').classList.contains('hidden'));
+  document.getElementById('result-count').textContent = hoards.length ? `${filtered.length} of ${hoards.length} hoards` : '';
 
-            if (id) {
-                const hoard = hoards.find(h => h.id === id);
-                if (!hoard) return;
-                title.innerHTML = `<i class="fa-solid fa-pen-to-square text-amber-400"></i><span>Edit Hoard</span>`;
-                document.getElementById('edit-id').value = hoard.id;
-                document.getElementById('input-pet-name').value = hoard.petName;
-                document.getElementById('input-hoarder').value = hoard.hoarder;
-                document.getElementById('input-image-url').value = hoard.image;
-                document.getElementById('input-is-majority').checked = hoard.isMajority || false;
+  grid.innerHTML = filtered.map(h => {
+    const total = getTotalCount(h.variants);
+    const badge = h.isMajority ? `
+      <div tabindex="0" class="group/tip absolute -top-2 -right-2 z-10 cursor-pointer">
+        ${iconImg(ICON_FILES.majority, 'Majority Circ', 'w-6 h-6 object-contain drop-shadow-[0_0_8px_rgba(168,85,247,.8)]', '👑', 'text-base')}
+        <div class="pointer-events-none absolute bottom-full left-0 mb-1 hidden group-hover/tip:block group-focus/tip:block bg-slate-900 text-yellow-300 text-[10px] font-semibold py-1 px-2 rounded-md border border-purple-500/50 whitespace-nowrap shadow-xl z-30">Majority Circ</div>
+      </div>` : '';
+    const actions = isUserMod ? `
+      <div class="absolute top-3 right-3 flex items-center space-x-1.5 z-20">
+        <button onclick="openHoardEditorModal('${h.id}')" class="p-1.5 bg-slate-900/90 hover:bg-purple-600 text-slate-300 hover:text-white rounded-lg border border-purple-900/40" title="Edit hoard" aria-label="Edit hoard"><i class="fa-solid fa-pen text-xs"></i></button>
+        <button onclick="deleteHoard('${h.id}')" class="p-1.5 bg-slate-900/90 hover:bg-rose-600 text-slate-300 hover:text-white rounded-lg border border-purple-900/40" title="Delete hoard" aria-label="Delete hoard"><i class="fa-solid fa-trash text-xs"></i></button>
+      </div>` : '';
+    return `
+      <div class="group relative glass-panel bg-[#101426] rounded-2xl hover:border-purple-500/40 p-5 transition-all duration-300 hover:-translate-y-1 hover:shadow-2xl flex flex-col justify-between">
+        ${actions}
+        <div>
+          <div class="flex items-start space-x-4 mb-4">
+            <div class="relative flex-shrink-0">
+              <img src="${esc(h.image)}" alt="${esc(h.petName)}" class="w-16 h-16 rounded-xl object-cover border border-purple-800/40">
+              ${badge}
+            </div>
+            <div class="${isUserMod ? 'pr-16' : ''} min-w-0 flex-1">
+              <h3 class="font-bold text-base text-white group-hover:text-yellow-300 transition-colors truncate">${esc(h.petName)}</h3>
+              <p class="text-xs text-purple-400 font-medium truncate">@${esc(h.hoarder)}</p>
+            </div>
+          </div>
+          <div id="variants-box-${h.id}" class="space-y-2 mb-4"></div>
+        </div>
+        <div class="pt-3 border-t border-purple-900/30 flex items-center justify-between">
+          <span class="text-xs font-semibold text-purple-300/60">Grand total hoard</span>
+          <span class="text-base font-black text-white">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
+        </div>
+      </div>`;
+  }).join('');
+  filtered.forEach(h => renderVariantsBox(h.id));
+}
 
-                document.getElementById('preview-thumb').src = hoard.image;
-                document.getElementById('dropzone-prompt').classList.add('hidden');
-                document.getElementById('dropzone-preview').classList.remove('hidden');
-                document.getElementById('upload-status-text').innerText = "Current Image Active";
-            } else {
-                title.innerHTML = `<i class="fa-solid fa-plus text-emerald-400"></i><span>Add New Hoard</span>`;
-            }
-            modal.classList.remove('hidden');
-            setTimeout(() => modal.classList.remove('opacity-0'), 10);
-        }
+/* ---------- EDITOR ---------- */
+function buildVariantFields() {
+  const group = (title, keys) => `
+    <fieldset class="space-y-2">
+      <legend class="text-[11px] font-bold text-purple-300 mb-1">${title}</legend>
+      ${keys.map(([k, label]) => `
+        <div class="flex items-center gap-2">
+          <label for="vc-${k}" class="text-xs text-slate-300 w-28 flex-shrink-0">${label}</label>
+          <input type="number" min="0" step="1" id="vc-${k}" value="0" class="num-input w-full min-w-0 px-2 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <select id="vt-${k}" aria-label="${label} trend" class="px-2 py-1.5 bg-slate-950 border border-purple-900/40 rounded-lg text-xs text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+            ${Object.entries(TRENDS).map(([t, o]) => `<option value="${t}">${o.label}</option>`).join('')}
+          </select>
+        </div>`).join('')}
+    </fieldset>`;
+  document.getElementById('variant-fields').innerHTML = group('Normal', NORMAL_KEYS) + group('XL', XL_KEYS);
+}
 
-        function closeHoardEditorModal() {
-            const modal = document.getElementById('hoard-editor-modal');
-            modal.classList.add('opacity-0');
-            setTimeout(() => modal.classList.add('hidden'), 200);
-        }
+function handleFileSelect(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+  selectedFileToUpload = file;
+  const reader = new FileReader();
+  reader.onload = e => showPreview(e.target.result, 'Ready to upload');
+  reader.readAsDataURL(file);
+}
 
-        async function sendDiscordWebhook(title, petName, hoarder, totalCount, variants, isMajority, imageUrl, color) {
-            const now = Math.floor(Date.now() / 1000);
-            const discordPayload = {
-                username: "PletHoards Tracker",
-                avatar_url: "https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80",
-                embeds: [{
-                    title: `${title}: ${petName}`,
-                    color: color,
-                    thumbnail: { url: imageUrl },
-                    fields: [
-                        { name: "👑 Hoarder", value: `**@${hoarder}** ${isMajority ? '*(Majority Circulation)*' : ''}`, inline: true },
-                        { name: "📦 Total Hoarded", value: `\`${totalCount === 0 ? 'N/A' : totalCount.toLocaleString()}\``, inline: true },
-                        { name: "🕒 Timestamp", value: `<t:${now}:R>`, inline: true }
-                    ],
-                    footer: { text: "PletHoards • Pet Economy Tracker" }
-                }]
-            };
+function showPreview(src, text) {
+  document.getElementById('preview-thumb').src = src;
+  document.getElementById('upload-status-text').textContent = text;
+  document.getElementById('dropzone-prompt').classList.add('hidden');
+  const p = document.getElementById('dropzone-preview');
+  p.classList.remove('hidden'); p.classList.add('flex');
+}
 
-            try {
-                await fetch(DISCORD_WEBHOOK_URL, {
-                    method: 'POST',
-                    headers: { 'Content-Type': 'application/json' },
-                    body: JSON.stringify(discordPayload)
-                });
-            } catch (err) {}
-        }
+function openHoardEditorModal(id = null) {
+  if (!isUserMod) { toast('Only editors can do that.', false); return; }
+  const modal = document.getElementById('hoard-editor-modal');
+  document.getElementById('hoard-form').reset();
+  ['edit-id', 'input-image-url'].forEach(i => document.getElementById(i).value = '');
+  selectedFileToUpload = null;
+  document.getElementById('dropzone-prompt').classList.remove('hidden');
+  const p = document.getElementById('dropzone-preview'); p.classList.add('hidden'); p.classList.remove('flex');
+  [...NORMAL_KEYS, ...XL_KEYS].forEach(([k]) => {
+    document.getElementById('vc-' + k).value = 0;
+    document.getElementById('vt-' + k).value = 'stable';
+  });
 
-        async function handleSaveHoard(e) {
-            e.preventDefault();
-            if (!isUserMod) return;
+  const title = document.getElementById('editor-title');
+  if (id) {
+    const h = hoards.find(x => x.id === id);
+    if (!h) return;
+    title.innerHTML = '<i class="fa-solid fa-pen-to-square text-amber-400"></i><span>Edit hoard</span>';
+    document.getElementById('edit-id').value = h.id;
+    document.getElementById('input-pet-name').value = h.petName;
+    document.getElementById('input-hoarder').value = h.hoarder;
+    document.getElementById('input-image-url').value = h.image || '';
+    document.getElementById('input-is-majority').checked = !!h.isMajority;
+    [...NORMAL_KEYS, ...XL_KEYS].forEach(([k]) => {
+      const v = (h.variants || {})[k];
+      document.getElementById('vc-' + k).value = getVariantCount(v);
+      const t = getVariantTrend(v);
+      document.getElementById('vt-' + k).value = TRENDS[t] ? t : 'stable';
+    });
+    if (h.image) showPreview(h.image, 'Current image');
+  } else {
+    title.innerHTML = '<i class="fa-solid fa-plus text-emerald-400"></i><span>Add hoard</span>';
+  }
+  modal.classList.remove('hidden');
+  setTimeout(() => modal.classList.remove('opacity-0'), 10);
+  document.getElementById('input-pet-name').focus();
+}
 
-            const editId = document.getElementById('edit-id').value;
-            const petName = document.getElementById('input-pet-name').value.trim();
-            const hoarder = document.getElementById('input-hoarder').value.trim();
-            let imageUrl = document.getElementById('input-image-url').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
-            const isMajority = document.getElementById('input-is-majority').checked;
+function closeHoardEditorModal() {
+  const modal = document.getElementById('hoard-editor-modal');
+  modal.classList.add('opacity-0');
+  setTimeout(() => modal.classList.add('hidden'), 200);
+}
 
-            if (selectedFileToUpload) {
-                const fileExt = selectedFileToUpload.name.split('.').pop();
-                const fileName = `${Date.now()}-${Math.random().toString(36).substring(2, 9)}.${fileExt}`;
-                const { data: uploadData, error: uploadError } = await supabaseClient.storage.from('hoard-images').upload(fileName, selectedFileToUpload);
-                if (uploadError) { alert("Image upload failed: " + uploadError.message); return; }
-                const { data: publicURLData } = supabaseClient.storage.from('hoard-images').getPublicUrl(fileName);
-                imageUrl = publicURLData.publicUrl;
-            }
+function readVariantsFromForm() {
+  const out = {};
+  [...NORMAL_KEYS, ...XL_KEYS].forEach(([k]) => {
+    const count = Math.max(0, parseInt(document.getElementById('vc-' + k).value) || 0);
+    let trend = document.getElementById('vt-' + k).value;
+    if (k.startsWith('xl') && count === 0) trend = 'none'; // hides the icon on empty XL rows
+    out[k] = { count, trend };
+  });
+  return out;
+}
 
-            const payload = { pet_name: petName, hoarder, image: imageUrl, is_majority: isMajority };
+async function sendDiscordWebhook(title, petName, hoarder, totalCount, isMajority, imageUrl, color) {
+  if (!DISCORD_WEBHOOK_URL) return;
+  try {
+    await fetch(DISCORD_WEBHOOK_URL, {
+      method: 'POST',
+      headers: { 'Content-Type': 'application/json' },
+      body: JSON.stringify({
+        username: 'PletHoards Tracker',
+        embeds: [{
+          title: `${title}: ${petName}`, color, thumbnail: { url: imageUrl },
+          fields: [
+            { name: '👑 Hoarder', value: `**@${hoarder}** ${isMajority ? '*(Majority Circulation)*' : ''}`, inline: true },
+            { name: '📦 Total Hoarded', value: `\`${totalCount === 0 ? 'N/A' : totalCount.toLocaleString()}\``, inline: true },
+            { name: '🕒 Timestamp', value: `<t:${Math.floor(Date.now() / 1000)}:R>`, inline: true }
+          ],
+          footer: { text: 'PletHoards • Pet Economy Tracker' }
+        }]
+      })
+    });
+  } catch (err) {}
+}
 
-            if (editId) {
-                let { error: updateError } = await supabaseClient.from('hoards').update(payload).eq('id', editId);
-                if (updateError) { alert("Failed to update hoard: " + updateError.message); return; }
-                sendDiscordWebhook("✏️ Pet Hoard Updated", petName, hoarder, 0, {}, isMajority, imageUrl, 16113419);
-            } else {
-                let { error: insertError } = await supabaseClient.from('hoards').insert([payload]);
-                if (insertError) { alert("Failed to add hoard: " + insertError.message); return; }
-                sendDiscordWebhook("🚨 New Pet Hoard Tracked", petName, hoarder, 0, {}, isMajority, imageUrl, 1095937);
-            }
+async function handleSaveHoard(e) {
+  e.preventDefault();
+  if (!isUserMod) return;
+  const saveBtn = document.getElementById('save-btn');
+  saveBtn.disabled = true; saveBtn.textContent = 'Saving...';
 
-            closeHoardEditorModal();
-            fetchHoardsFromCloud();
-        }
+  try {
+    const editId = document.getElementById('edit-id').value;
+    const petName = document.getElementById('input-pet-name').value.trim();
+    const hoarder = document.getElementById('input-hoarder').value.trim();
+    const isMajority = document.getElementById('input-is-majority').checked;
+    let imageUrl = document.getElementById('input-image-url').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
 
-        async function deleteHoard(id) {
-            if (!isUserMod) return;
-            const hoard = hoards.find(h => h.id === id);
-            if (confirm("Are you sure you want to delete this hoard?")) {
-                await supabaseClient.from('hoards').delete().eq('id', id);
-                if (hoard) {
-                    sendDiscordWebhook("🗑️ Pet Hoard Removed", hoard.petName, hoard.hoarder, getTotalCount(hoard.variants), hoard.variants, hoard.isMajority, hoard.image, 16007006);
-                }
-                fetchHoardsFromCloud();
-            }
-        }
+    if (selectedFileToUpload) {
+      const ext = selectedFileToUpload.name.split('.').pop();
+      const fileName = `${Date.now()}-${Math.random().toString(36).slice(2, 9)}.${ext}`;
+      const { error: upErr } = await supabaseClient.storage.from('hoard-images').upload(fileName, selectedFileToUpload);
+      if (upErr) { toast('Image upload failed: ' + upErr.message, false); return; }
+      imageUrl = supabaseClient.storage.from('hoard-images').getPublicUrl(fileName).data.publicUrl;
+    }
 
-        async function checkUserSession() {
-            try {
-                const { data: { session } } = await supabaseClient.auth.getSession();
-                if (session && session.user) {
-                    currentUser = session.user;
-                    const meta = currentUser.user_metadata || {};
-                    const discordId = meta.provider_id || meta.sub || '';
-                    const discordName = meta.full_name || meta.name || currentUser.email || 'User';
-                    const avatarUrl = meta.avatar_url || meta.picture || 'https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
-                    
-                    isUserMod = ADMIN_DISCORD_IDS.includes(discordId) || ADMIN_DISCORD_IDS.length === 0;
-                    
-                    document.getElementById('discord-login-btn').classList.add('hidden');
-                    const profile = document.getElementById('user-profile');
-                    profile.classList.remove('hidden');
-                    profile.classList.add('flex');
-                    document.getElementById('user-avatar').src = avatarUrl;
-                    document.getElementById('user-name').innerText = discordName;
-                    
-                    if (isUserMod) {
-                        document.getElementById('mod-badge').classList.remove('hidden');
-                        document.getElementById('user-role-text').innerText = 'Administrator / Editor';
-                    }
-                    updateAuthUI();
-                }
-            } catch (e) {}
-        }
+    const variants = readVariantsFromForm();
+    const payload = { pet_name: petName, hoarder, image: imageUrl, is_majority: isMajority, variants };
+    const query = editId
+      ? supabaseClient.from('hoards').update(payload).eq('id', editId).select()
+      : supabaseClient.from('hoards').insert([payload]).select();
+    const { data, error } = await query;
 
-        window.onload = async function() {
-            await checkUserSession();
-            await fetchHoardsFromCloud();
-        };
-    </script>
+    if (error) { toast('Save failed: ' + error.message, false); return; }
+    // RLS blocks silently: no error but no rows changed
+    if (!data || data.length === 0) { toast('Save blocked by database permissions (check your Supabase policies).', false); return; }
+
+    sendDiscordWebhook(editId ? '✏️ Pet Hoard Updated' : '🚨 New Pet Hoard Tracked', petName, hoarder, getTotalCount(variants), isMajority, imageUrl, editId ? 16113419 : 1095937);
+    toast(editId ? 'Hoard updated' : 'Hoard added');
+    closeHoardEditorModal();
+    await fetchHoardsFromCloud();
+  } finally {
+    saveBtn.disabled = false; saveBtn.textContent = 'Save changes';
+  }
+}
+
+async function deleteHoard(id) {
+  if (!isUserMod) return;
+  const h = hoards.find(x => x.id === id);
+  if (!h || !confirm(`Delete "${h.petName}"? This can't be undone.`)) return;
+  const { data, error } = await supabaseClient.from('hoards').delete().eq('id', id).select();
+  if (error || !data || !data.length) { toast(error ? 'Delete failed: ' + error.message : 'Delete blocked by database permissions.', false); return; }
+  sendDiscordWebhook('🗑️ Pet Hoard Removed', h.petName, h.hoarder, getTotalCount(h.variants), h.isMajority, h.image, 16007006);
+  toast('Hoard deleted');
+  fetchHoardsFromCloud();
+}
+
+/* ---------- INIT ---------- */
+let searchTimer;
+document.getElementById('search-input').addEventListener('input', () => { clearTimeout(searchTimer); searchTimer = setTimeout(renderHoards, 150); });
+document.addEventListener('keydown', e => { if (e.key === 'Escape') closeHoardEditorModal(); });
+buildTrendKeys();
+buildVariantFields();
+fetchHoardsFromCloud();
+</script>
 </body>
 </html>
