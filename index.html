@@ -33,9 +33,7 @@ body { font-family: 'Inter', sans-serif; background: #080a14; color: #f1f5f9; }
     <div class="flex items-center space-x-3">
       <img id="site-logo" src="Untitled Project (3).jpg" alt="PletHoards logo" onerror="this.src='https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80'" class="w-11 h-11 rounded-xl object-cover border border-yellow-400/40 shadow-lg shadow-purple-900/40">
       <div>
-        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">PletHoards
-          <span class="text-xs font-semibold px-2 py-0.5 rounded-full bg-yellow-400/10 text-yellow-400 border border-yellow-400/30">v2.26</span>
-        </h1>
+        <h1 class="text-xl sm:text-2xl font-extrabold tracking-tight text-white flex items-center gap-2">PletHoards</h1>
         <p class="text-xs text-purple-300/70 hidden sm:block">Track economy hoards & rare pet distributions</p>
       </div>
     </div>
@@ -101,6 +99,39 @@ body { font-family: 'Inter', sans-serif; background: #080a14; color: #f1f5f9; }
 </main>
 </div>
 
+<!-- DETAILS & TRADES MODAL -->
+<div id="detail-modal" class="fixed inset-0 z-40 hidden items-center justify-center p-4 bg-black/80 backdrop-blur-md" onclick="if(event.target===this)closeDetail()">
+  <div class="glass-panel bg-[#0d1021] rounded-2xl w-full max-w-xl max-h-[85vh] flex flex-col shadow-2xl">
+    <div class="flex items-start justify-between gap-3 p-5 pb-4 border-b border-purple-900/30">
+      <div id="detail-head" class="min-w-0"></div>
+      <button onclick="closeDetail()" class="text-slate-400 hover:text-white p-1" aria-label="Close"><i class="fa-solid fa-xmark text-lg"></i></button>
+    </div>
+    <div class="flex items-center justify-between px-5 pt-4">
+      <h4 class="text-xs font-bold text-purple-200 uppercase tracking-wider">Trades</h4>
+      <span id="detail-trade-count" class="text-[11px] text-purple-300/60"></span>
+    </div>
+    <div id="detail-trades" class="p-5 pt-3 space-y-2 overflow-y-auto custom-scrollbar"></div>
+  </div>
+</div>
+
+<!-- FLAPPY EASTER EGG (click the logo 5 times) -->
+<div id="flappy-modal" class="fixed inset-0 z-50 bg-black/85 backdrop-blur-md hidden items-center justify-center p-4">
+  <div class="glass-panel w-full max-w-sm p-5 rounded-2xl space-y-3">
+    <div class="flex items-center justify-between">
+      <h2 class="text-sm font-bold text-white uppercase tracking-wider"><i class="fa-solid fa-gamepad text-yellow-400 mr-2"></i>Flappy PletHoards</h2>
+      <div class="flex items-center gap-2">
+        <button onclick="toggleLeaderboard()" class="px-3 py-1 bg-purple-600/80 hover:bg-purple-500 text-white rounded-lg text-xs font-bold"><i class="fa-solid fa-trophy text-yellow-300"></i> Scores</button>
+        <button onclick="closeFlappy()" class="text-slate-400 hover:text-white p-1" aria-label="Close"><i class="fa-solid fa-xmark text-lg"></i></button>
+      </div>
+    </div>
+    <div class="relative mx-auto" style="width:320px;max-width:100%">
+      <canvas id="flappy-canvas" width="320" height="480" class="w-full rounded-xl border border-purple-500/40 cursor-pointer touch-none"></canvas>
+      <div id="flappy-board" class="hidden absolute inset-0 bg-slate-950/95 rounded-xl p-4 overflow-y-auto"></div>
+    </div>
+    <p class="text-xs text-purple-300/60 text-center">Space / click to flap</p>
+  </div>
+</div>
+
 <!-- TOAST -->
 <div id="toast" class="fixed bottom-5 left-1/2 -translate-x-1/2 z-[60] hidden px-4 py-2.5 rounded-xl text-sm font-semibold shadow-2xl border"></div>
 
@@ -117,13 +148,21 @@ body { font-family: 'Inter', sans-serif; background: #080a14; color: #f1f5f9; }
       <input type="hidden" id="input-image-url">
 
       <div class="grid grid-cols-1 sm:grid-cols-2 gap-4">
-        <div>
+        <div class="sm:col-span-2">
           <label for="input-pet-name" class="block text-xs font-semibold text-slate-300 mb-1">Pet name</label>
           <input type="text" id="input-pet-name" required placeholder="e.g. Celestial Dragon" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
         </div>
         <div>
-          <label for="input-hoarder" class="block text-xs font-semibold text-slate-300 mb-1">Hoarder username</label>
-          <input type="text" id="input-hoarder" required placeholder="e.g. ShadowCollector" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+          <label for="input-hoarder" class="block text-xs font-semibold text-slate-300 mb-1">Hoarder name</label>
+          <input type="text" id="input-hoarder" required placeholder="Shown on the card" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+        </div>
+        <div>
+          <label for="input-roblox-id" class="block text-xs font-semibold text-slate-300 mb-1">Roblox ID</label>
+          <input type="text" id="input-roblox-id" required inputmode="numeric" pattern="\d{5,}" placeholder="e.g. 8399342200" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
+        </div>
+        <div class="sm:col-span-2">
+          <label for="input-discord" class="block text-xs font-semibold text-slate-300 mb-1">Discord user <span class="text-purple-300/50 font-normal">(optional)</span></label>
+          <input type="text" id="input-discord" placeholder="e.g. username" class="w-full px-3 py-2 bg-slate-950 border border-purple-900/40 rounded-xl text-sm text-white focus:outline-none focus:ring-2 focus:ring-purple-500">
         </div>
       </div>
 
@@ -297,6 +336,7 @@ function buildTrendKeys() {
     <button type="button" id="key-${k}" onclick="setTrendFilter('${k}')" class="key-btn flex items-center space-x-3 bg-${t.box}-950/30 hover:bg-${t.box}-950/60 p-3 rounded-xl border border-${t.box}-500/30 text-left">
       ${iconImg(ICON_FILES[k], t.label, 'w-7 h-7 object-contain flex-shrink-0', t.emoji, 'text-xl flex-shrink-0')}
       <div><div class="font-semibold text-${t.box}-400 text-xs">${t.label}</div><p class="text-[11px] text-slate-300">${t.sub}</p></div>
+      <span id="kc-${k}" class="ml-auto pl-2 text-sm font-bold text-${t.box}-300"></span>
     </button>`).join('');
 }
 
@@ -319,6 +359,9 @@ async function fetchHoardsFromCloud() {
         hoarder: item.hoarder || '',
         image: item.image,
         isMajority: item.is_majority || item.isMajority || false,
+        robloxId: item.roblox_id ? String(item.roblox_id) : '',
+        discord: item.discord_user || '',
+        trades: Array.isArray(item.trades) ? item.trades : [],
         variants: item.variants || {}
       }));
     }
@@ -357,17 +400,21 @@ function renderHoards() {
   const grid = document.getElementById('hoards-grid');
   const q = document.getElementById('search-input').value.toLowerCase().trim();
 
-  const filtered = hoards.filter(h => {
-    if (!(h.petName.toLowerCase().includes(q) || h.hoarder.toLowerCase().includes(q))) return false;
-    if (activeTrendFilter === 'all') return true;
-    return Object.values(h.variants || {}).some(v => getVariantTrend(v) === activeTrendFilter && getVariantCount(v) > 0);
-  }).sort((a, b) => a.petName.localeCompare(b.petName, undefined, { sensitivity: 'base' }));
+  const hasTrend = (h, t) => Object.values(h.variants || {}).some(v => getVariantTrend(v) === t && getVariantCount(v) > 0);
+  const searched = hoards.filter(h => [h.petName, h.hoarder, h.discord].some(x => (x || '').toLowerCase().includes(q)));
+  Object.keys(TRENDS).forEach(t => {
+    const n = searched.filter(h => hasTrend(h, t)).length;
+    const c = document.getElementById('kc-' + t); if (c) c.textContent = n;
+    const b = document.getElementById('key-' + t); if (b) b.classList.toggle('opacity-40', n === 0 && activeTrendFilter !== t);
+  });
+  const filtered = searched.filter(h => activeTrendFilter === 'all' || hasTrend(h, activeTrendFilter)).sort((a, b) => a.petName.localeCompare(b.petName, undefined, { sensitivity: 'base' }));
 
   document.getElementById('empty-state').classList.toggle('hidden', filtered.length > 0 || !document.getElementById('loading-state').classList.contains('hidden'));
   document.getElementById('result-count').textContent = hoards.length ? `${filtered.length} of ${hoards.length} hoards` : '';
 
   grid.innerHTML = filtered.map(h => {
     const total = getTotalCount(h.variants);
+    const tc = (h.trades || []).length;
     const badge = h.isMajority ? `
       <div tabindex="0" class="group/tip absolute -top-2 -right-2 z-10 cursor-pointer">
         ${iconImg(ICON_FILES.majority, 'Majority Circ', 'w-6 h-6 object-contain drop-shadow-[0_0_8px_rgba(168,85,247,.8)]', '👑', 'text-base')}
@@ -394,9 +441,14 @@ function renderHoards() {
           </div>
           <div id="variants-box-${h.id}" class="space-y-2 mb-4"></div>
         </div>
-        <div class="pt-3 border-t border-purple-900/30 flex items-center justify-between">
-          <span class="text-xs font-semibold text-purple-300/60">Grand total hoard</span>
-          <span class="text-base font-black text-white">${total === 0 ? 'N/A' : total.toLocaleString()}</span>
+        <div class="pt-3 border-t border-purple-900/30 flex items-center justify-between gap-3">
+          <button type="button" onclick="openDetail('${h.id}')" class="flex items-center gap-1.5 text-xs font-semibold px-2.5 py-1.5 rounded-lg bg-purple-900/40 hover:bg-purple-600 text-purple-200 hover:text-white border border-purple-800/40">
+            <i class="fa-solid fa-right-left text-[10px]"></i>Trades${tc ? `<span class="px-1.5 rounded bg-purple-950 text-[10px]">${tc}</span>` : ''}
+          </button>
+          <div class="text-right leading-tight">
+            <div class="text-[10px] font-semibold text-purple-300/60">Total hoard</div>
+            <div class="text-base font-black text-white">${total === 0 ? 'N/A' : total.toLocaleString()}</div>
+          </div>
         </div>
       </div>`;
   }).join('');
@@ -458,6 +510,8 @@ function openHoardEditorModal(id = null) {
     document.getElementById('edit-id').value = h.id;
     document.getElementById('input-pet-name').value = h.petName;
     document.getElementById('input-hoarder').value = h.hoarder;
+    document.getElementById('input-roblox-id').value = h.robloxId || '';
+    document.getElementById('input-discord').value = h.discord || '';
     document.getElementById('input-image-url').value = h.image || '';
     document.getElementById('input-is-majority').checked = !!h.isMajority;
     [...NORMAL_KEYS, ...XL_KEYS].forEach(([k]) => {
@@ -524,6 +578,9 @@ async function handleSaveHoard(e) {
     const editId = document.getElementById('edit-id').value;
     const petName = document.getElementById('input-pet-name').value.trim();
     const hoarder = document.getElementById('input-hoarder').value.trim();
+    const robloxId = document.getElementById('input-roblox-id').value.trim();
+    const discordUser = document.getElementById('input-discord').value.trim().replace(/^@/, '');
+    if (!/^\d{5,}$/.test(robloxId)) { toast('Roblox ID must be a number (5+ digits).', false); return; }
     const isMajority = document.getElementById('input-is-majority').checked;
     let imageUrl = document.getElementById('input-image-url').value.trim() || 'https://images.unsplash.com/photo-1543466835-00a7907e9de1?auto=format&fit=crop&w=300&q=80';
 
@@ -536,7 +593,7 @@ async function handleSaveHoard(e) {
     }
 
     const variants = readVariantsFromForm();
-    const payload = { pet_name: petName, hoarder, image: imageUrl, is_majority: isMajority, variants };
+    const payload = { pet_name: petName, hoarder, roblox_id: robloxId, discord_user: discordUser || null, image: imageUrl, is_majority: isMajority, variants };
     const query = editId
       ? supabaseClient.from('hoards').update(payload).eq('id', editId).select()
       : supabaseClient.from('hoards').insert([payload]).select();
@@ -565,6 +622,166 @@ async function deleteHoard(id) {
   toast('Hoard deleted');
   fetchHoardsFromCloud();
 }
+
+/* ---------- DETAILS & TRADES ---------- */
+let detailId = null;
+const squash = s => String(s).toLowerCase().replace(/[^a-z0-9]/g, '');
+function openDetail(id) {
+  const h = hoards.find(x => x.id === id);
+  if (!h) return;
+  detailId = id;
+  document.getElementById('detail-head').innerHTML = `
+    <div class="flex items-center gap-3">
+      <img src="${esc(h.image)}" alt="" class="w-12 h-12 rounded-xl object-cover border border-purple-800/40">
+      <div class="min-w-0"><h3 class="font-bold text-white truncate">${esc(h.petName)}</h3><p class="text-xs text-purple-400 truncate">@${esc(h.hoarder)}</p></div>
+    </div>
+    <div class="flex flex-wrap gap-2 mt-3 text-[11px]">
+      ${h.discord ? `<span class="px-2 py-1 rounded-lg bg-discord/20 border border-discord/40 text-indigo-200"><i class="fa-brands fa-discord mr-1"></i>${esc(h.discord)}</span>` : ''}
+      ${h.robloxId ? `<a href="https://www.roblox.com/users/${encodeURIComponent(h.robloxId)}/profile" target="_blank" rel="noopener" class="px-2 py-1 rounded-lg bg-slate-900 border border-purple-900/40 text-slate-200 hover:text-white"><i class="fa-solid fa-user mr-1"></i>Roblox ${esc(h.robloxId)}</a>` : ''}
+    </div>`;
+  renderDetailTrades();
+  const m = document.getElementById('detail-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+}
+
+function closeDetail() {
+  const m = document.getElementById('detail-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+
+const variantLabel = v => {
+  const x = String(v || '').replace(/[_-]+/g, ' ').trim().toLowerCase();
+  return (!x || x === 'normal') ? '' : x.replace(/\b\w/g, c => c.toUpperCase());
+};
+const fmtVal = n => n == null ? '' : n >= 1e6 ? (n / 1e6).toFixed(1).replace(/\.0$/, '') + 'M' : n >= 1e3 ? Math.round(n / 1e3) + 'K' : String(n);
+
+// Trades are stored by the sync, already filtered to this pet, from the hoarder's point of view:
+// { ts, with:{user,name}, gave:[{name,variant,qty,xl?}], received:[...], gaveValue, receivedValue }
+function renderDetailTrades() {
+  const h = hoards.find(x => x.id === detailId);
+  if (!h) return;
+  const list = h.trades || [];
+  const el = document.getElementById('detail-trades');
+  document.getElementById('detail-trade-count').textContent = list.length ? `${list.length} recent` : '';
+  if (!list.length) {
+    el.innerHTML = '<p class="text-xs text-purple-300/60 text-center py-8">No recent trades involving this pet.</p>';
+    return;
+  }
+  const pet = squash(h.petName);
+  const chip = i => {
+    const mine = squash(i.name) === pet;
+    const label = [variantLabel(i.variant), i.xl ? 'XL' : '', i.name].filter(Boolean).join(' ');
+    return `<span class="px-2 py-0.5 rounded-md border text-[11px] ${mine ? 'bg-yellow-400/10 border-yellow-400/40 text-yellow-200' : 'bg-slate-900 border-purple-900/40 text-slate-200'}">${i.qty > 1 ? i.qty + '× ' : ''}${esc(label)}</span>`;
+  };
+  const group = (label, color, items, val) => `
+    <div>
+      <div class="flex justify-between text-[10px] font-bold text-${color}-400 uppercase mb-1"><span>${label}</span><span class="text-purple-300/60 normal-case font-semibold">${val != null ? '≈ ' + fmtVal(val) : ''}</span></div>
+      <div class="flex flex-wrap gap-1.5">${items.length ? items.map(chip).join('') : '<span class="text-[11px] text-slate-500">nothing</span>'}</div>
+    </div>`;
+  el.innerHTML = list.map(t => {
+    const d = t.ts ? new Date(t.ts * 1000).toLocaleDateString() : '';
+    const w = t.with || {};
+    const who = (w.name || w.user) ? `with ${esc(w.name || w.user)}${w.name && w.user ? ` <span class="text-purple-300/50">(@${esc(w.user)})</span>` : ''}` : 'Trade';
+    return `<div class="p-3 rounded-xl bg-slate-950/60 border border-purple-900/30 space-y-2.5">
+      <div class="flex justify-between text-[11px] text-slate-300"><span>${who}</span><span class="text-purple-300/60">${d}</span></div>
+      ${group('Gave', 'rose', t.gave || [], t.gaveValue)}${group('Received', 'emerald', t.received || [], t.receivedValue)}
+    </div>`;
+  }).join('');
+}
+
+/* ---------- FLAPPY EASTER EGG (click the logo 5 times) ---------- */
+const FL = { W: 320, H: 480, GAP: 130, PIPE_W: 52, SPEED: 2.2, GRAV: 0.42, JUMP: -6.6, BX: 64, R: 17 };
+let fl = null, flRaf = 0, flBest = 0, logoClicks = 0, logoTimer;
+const flImg = new Image(); flImg.src = 'Untitled Project (3).jpg';
+try { flBest = parseInt(localStorage.getItem('flappyBest')) || 0; } catch (e) {}
+
+document.getElementById('site-logo').addEventListener('click', () => {
+  logoClicks++; clearTimeout(logoTimer);
+  logoTimer = setTimeout(() => logoClicks = 0, 2500);
+  if (logoClicks >= 5) { logoClicks = 0; openFlappy(); }
+});
+
+function openFlappy() {
+  const m = document.getElementById('flappy-modal');
+  m.classList.remove('hidden'); m.classList.add('flex');
+  document.getElementById('flappy-board').classList.add('hidden');
+  flReset(); cancelAnimationFrame(flRaf); flLoop();
+}
+function closeFlappy() {
+  cancelAnimationFrame(flRaf);
+  const m = document.getElementById('flappy-modal');
+  m.classList.add('hidden'); m.classList.remove('flex');
+}
+function flReset() { fl = { y: FL.H / 2, v: 0, pipes: [], frame: 0, score: 0, state: 'ready', overAt: 0 }; }
+function flFlap() {
+  if (!fl) return;
+  if (fl.state === 'ready') fl.state = 'play';
+  if (fl.state === 'play') fl.v = FL.JUMP;
+  else if (fl.state === 'over' && Date.now() - fl.overAt > 400) flReset();
+}
+function flOver() {
+  if (fl.state === 'over') return;
+  fl.state = 'over'; fl.overAt = Date.now();
+  if (fl.score > flBest) { flBest = fl.score; try { localStorage.setItem('flappyBest', flBest); } catch (e) {} }
+  submitFlappyScore(fl.score);
+}
+
+function flLoop() {
+  const x = document.getElementById('flappy-canvas').getContext('2d');
+  if (fl.state === 'play') {
+    fl.v += FL.GRAV; fl.y += fl.v; fl.frame++;
+    if (fl.frame % 85 === 1) fl.pipes.push({ x: FL.W, top: 60 + Math.random() * (FL.H - FL.GAP - 120), passed: false });
+    fl.pipes.forEach(p => p.x -= FL.SPEED);
+    fl.pipes = fl.pipes.filter(p => p.x > -FL.PIPE_W);
+    fl.pipes.forEach(p => {
+      if (!p.passed && p.x + FL.PIPE_W < FL.BX - FL.R) { p.passed = true; fl.score++; }
+      if (FL.BX + FL.R > p.x && FL.BX - FL.R < p.x + FL.PIPE_W && (fl.y - FL.R < p.top || fl.y + FL.R > p.top + FL.GAP)) flOver();
+    });
+    if (fl.y + FL.R > FL.H || fl.y - FL.R < 0) flOver();
+  }
+  x.fillStyle = '#4ec0ca'; x.fillRect(0, 0, FL.W, FL.H);
+  x.fillStyle = '#73be2e'; x.strokeStyle = '#000'; x.lineWidth = 2;
+  fl.pipes.forEach(p => {
+    const by = p.top + FL.GAP;
+    x.fillRect(p.x, 0, FL.PIPE_W, p.top); x.strokeRect(p.x, 0, FL.PIPE_W, p.top);
+    x.fillRect(p.x, by, FL.PIPE_W, FL.H - by); x.strokeRect(p.x, by, FL.PIPE_W, FL.H - by);
+  });
+  x.save(); x.beginPath(); x.arc(FL.BX, fl.y, FL.R, 0, Math.PI * 2); x.closePath();
+  if (flImg.complete && flImg.naturalWidth) { x.clip(); x.drawImage(flImg, FL.BX - FL.R, fl.y - FL.R, FL.R * 2, FL.R * 2); }
+  else { x.fillStyle = '#facc15'; x.fill(); }
+  x.restore();
+  x.beginPath(); x.arc(FL.BX, fl.y, FL.R, 0, Math.PI * 2); x.strokeStyle = '#facc15'; x.lineWidth = 2; x.stroke();
+  x.textAlign = 'center'; x.fillStyle = '#fff'; x.strokeStyle = '#000'; x.lineJoin = 'round';
+  const txt = (s, y, size) => { x.font = `800 ${size}px Inter, sans-serif`; x.lineWidth = 4; x.strokeText(s, FL.W / 2, y); x.fillText(s, FL.W / 2, y); };
+  txt(String(fl.score), 60, 36);
+  if (fl.state === 'ready') txt('Click / Space to fly', 200, 18);
+  if (fl.state === 'over') { txt('Game Over', 190, 30); txt(`Score ${fl.score}  ·  Best ${flBest}`, 225, 16); txt('Click / Space to retry', 260, 14); }
+  flRaf = requestAnimationFrame(flLoop);
+}
+
+async function submitFlappyScore(score) {
+  if (score < 1) return;
+  const m = (currentUser && currentUser.user_metadata) || {};
+  const name = currentUser ? (m.full_name || m.name || 'Player') : 'Guest';
+  try { await supabaseClient.from('flappy_scores').insert([{ name: name.slice(0, 24), score }]); } catch (e) {}
+}
+async function toggleLeaderboard() {
+  const b = document.getElementById('flappy-board');
+  if (!b.classList.contains('hidden')) { b.classList.add('hidden'); return; }
+  b.classList.remove('hidden');
+  b.innerHTML = '<p class="text-xs text-purple-300/60 text-center py-8">Loading...</p>';
+  const { data, error } = await supabaseClient.from('flappy_scores').select('name,score').order('score', { ascending: false }).limit(10);
+  if (error) { b.innerHTML = '<p class="text-xs text-purple-300/60 text-center py-8">Leaderboard unavailable.</p>'; return; }
+  b.innerHTML = '<h3 class="text-sm font-bold text-yellow-300 mb-3 text-center">Top scores</h3>' +
+    (data.length ? data.map((r, i) => `<div class="flex justify-between text-xs py-1.5 border-b border-purple-900/30"><span class="text-slate-200">${i + 1}. ${esc(r.name)}</span><span class="font-bold text-yellow-300">${r.score}</span></div>`).join('')
+                 : '<p class="text-xs text-purple-300/60 text-center py-8">No scores yet.</p>');
+}
+
+document.getElementById('flappy-canvas').addEventListener('pointerdown', flFlap);
+document.addEventListener('keydown', e => {
+  if (e.code === 'Space' && !document.getElementById('flappy-modal').classList.contains('hidden')) { e.preventDefault(); flFlap(); }
+  if (e.key === 'Escape') { closeDetail(); closeFlappy(); }
+});
 
 /* ---------- INIT ---------- */
 let searchTimer;
