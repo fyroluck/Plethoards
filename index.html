@@ -203,6 +203,8 @@ body { font-family: 'Inter', sans-serif; background: #080a14; color: #f1f5f9; }
 /* ---------- CONFIG ---------- */
 const SUPABASE_URL = 'https://hxparrmqbapehkmmbhee.supabase.co';
 const SUPABASE_ANON_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imh4cGFycm1xYmFwZWhrbW1iaGVlIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTI0Mzc4OTYsImV4cCI6MjEwODAxMzg5Nn0.xZsfgf0z14nUk4N0R3YTnO3Ka7wx-26o0vf3KJ9E1Jc';
+// These Discord IDs are ALWAYS editors (backup/owner). Everyone else is decided by their Discord role,
+// checked by the check-editor function every time the site loads.
 const ADMIN_DISCORD_IDS = ['1024720234357194814'];
 const DISCORD_WEBHOOK_URL = 'https://discord.com/api/webhooks/1561859474195615888/oaFtfIhFMrdombJ4tedP9Ne_P1oXqeVy3L1QMFfmYkLDNurvTz3MikaFMeknFqd1rNQN';
 
@@ -292,18 +294,55 @@ function applySession(session) {
     profile.classList.add('hidden'); profile.classList.remove('flex');
   } else {
     const m = currentUser.user_metadata || {};
-    isUserMod = ADMIN_DISCORD_IDS.includes(getDiscordId(currentUser));
+    // Provisional answer (owner list + last known result) so editors don't flicker; the Discord check below decides.
+    let cached = false; try { cached = localStorage.getItem('editor:' + currentUser.id) === '1'; } catch (e) {}
+    isUserMod = ADMIN_DISCORD_IDS.includes(getDiscordId(currentUser)) || cached;
     loginBtn.classList.add('hidden');
     profile.classList.remove('hidden'); profile.classList.add('flex');
     document.getElementById('user-avatar').src = m.avatar_url || m.picture || 'https://images.unsplash.com/photo-1534713875002-d1d0cf377fde?auto=format&fit=crop&w=120&q=80';
     document.getElementById('user-name').textContent = m.full_name || m.name || currentUser.email || 'User';
-    document.getElementById('mod-badge').classList.toggle('hidden', !isUserMod);
-    document.getElementById('user-role-text').textContent = isUserMod ? 'Administrator / Editor' : 'Viewer';
   }
+  renderRole();
+  if (currentUser) refreshEditorStatus();
+}
+
+let roleChecking = false;
+let lastRoleCheck = { id: null, at: 0 };
+
+function renderRole() {
+  document.getElementById('mod-badge').classList.toggle('hidden', !isUserMod);
+  document.getElementById('user-role-text').textContent = !currentUser ? '' : roleChecking ? 'Checking role...' : (isUserMod ? 'Administrator / Editor' : 'Viewer');
   const addBtn = document.getElementById('add-hoard-btn');
   addBtn.classList.toggle('hidden', !isUserMod);
   addBtn.classList.toggle('flex', isUserMod);
   renderHoards(); // card edit/delete buttons depend on isUserMod
+}
+
+// Asks the check-editor function (which asks Discord for the user's current roles). Runs on every page load.
+async function refreshEditorStatus() {
+  const u = currentUser;
+  if (!u) return;
+  if (lastRoleCheck.id === u.id && Date.now() - lastRoleCheck.at < 20000) { roleChecking = false; renderRole(); return; }
+  lastRoleCheck = { id: u.id, at: Date.now() };
+  roleChecking = true; renderRole();
+
+  let result = null;
+  try {
+    const { data, error } = await supabaseClient.functions.invoke('check-editor');
+    if (!error && data && typeof data.isEditor === 'boolean') result = data.isEditor;
+  } catch (e) {}
+  if (result === null) { // Discord or the function was unreachable: fall back to the last saved status
+    try {
+      const { data } = await supabaseClient.from('editors').select('user_id').eq('user_id', u.id).maybeSingle();
+      result = !!data;
+    } catch (e) { result = false; }
+  }
+  if (currentUser && currentUser.id === u.id) {
+    isUserMod = result || ADMIN_DISCORD_IDS.includes(getDiscordId(u));
+    try { localStorage.setItem('editor:' + u.id, isUserMod ? '1' : '0'); } catch (e) {}
+    roleChecking = false;
+    renderRole();
+  }
 }
 
 // Fires for INITIAL_SESSION, SIGNED_IN (incl. return from Discord), TOKEN_REFRESHED, SIGNED_OUT.
